@@ -28,7 +28,14 @@ function initSupabase() {
     }
     
     try {
-        supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+            auth: {
+                flowType: 'pkce',
+                autoRefreshToken: true,
+                persistSession: true,
+                detectSessionInUrl: true
+            }
+        });
         if (typeof logger !== 'undefined') logger.log('✅ Supabase клиент инициализирован');
         return supabaseClient;
     } catch (error) {

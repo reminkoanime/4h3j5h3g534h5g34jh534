@@ -17,6 +17,26 @@ function reminkoOAuthRedirectUrl() {
 
 const REMINKO_OAUTH_PENDING_KEY = 'reminko_oauth_pending';
 
+/** Убирает из адреса #access_token или ?code после OAuth (токены не должны оставаться в URL). */
+function reminkoStripOAuthParamsFromUrl() {
+    try {
+        const { pathname, search, hash } = window.location;
+        if (hash && (hash.includes('access_token=') || hash.includes('error='))) {
+            window.history.replaceState(null, '', pathname + search);
+            return;
+        }
+        if (search.includes('code=')) {
+            const params = new URLSearchParams(search.startsWith('?') ? search.slice(1) : search);
+            params.delete('code');
+            params.delete('state');
+            const q = params.toString();
+            window.history.replaceState(null, '', pathname + (q ? `?${q}` : ''));
+        }
+    } catch (_) {
+        /* ignore */
+    }
+}
+
 function reminkoMarkOAuthRedirectPending() {
     try {
         sessionStorage.setItem(REMINKO_OAUTH_PENDING_KEY, '1');
@@ -140,6 +160,9 @@ async function handleOAuthCallback() {
             } catch (_) {
                 /* ignore */
             }
+            if (window.location.hash && window.location.hash.includes('error=')) {
+                reminkoStripOAuthParamsFromUrl();
+            }
             return;
         }
 
@@ -196,6 +219,8 @@ async function handleOAuthCallback() {
         if (typeof window.reminkoSyncAuthStorage === 'function') {
             window.reminkoSyncAuthStorage(session);
         }
+
+        reminkoStripOAuthParamsFromUrl();
 
         const loginModal = document.getElementById('loginModal');
         if (loginModal) {
