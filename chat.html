@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <script src="scripts/desktop-only-guard.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Общий чат - Re-Minko</title>
+    <meta
+        name="description"
+        content="Общий чат Re-Minko: общение пользователей аниме-сайта в реальном времени. re-minko-anime.com."
+    />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://re-minko-anime.com/chat.html" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Общий чат — Re-Minko" />
+    <meta property="og:description" content="Общий чат сообщества на re-minko-anime.com." />
+    <meta property="og:url" content="https://re-minko-anime.com/chat.html" />
+    <meta property="og:image" content="https://re-minko-anime.com/Fons/fonG.jpg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="Fons/vavo/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="Fons/vavo/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="Fons/vavo/favicon-16x16.png">
+    <link rel="manifest" href="Fons/vavo/site.webmanifest">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/sidebar-layout.css">
+    <link rel="stylesheet" href="styles/global-chat.css">
+    <link rel="stylesheet" href="styles/loading.css">
+    <link rel="stylesheet" href="styles/register-flow.css">
+    <link rel="stylesheet" href="styles/notifications.css">
+</head>
+<body>
+    <!-- Экран загрузки -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Загрузка<span class="loading-dots"></span></div>
+        <div class="loading-character"></div>
+        <div class="loading-anime"></div>
+    </div>
+    <!-- Верхняя панель будет добавлена через navigation.js -->
+    
+    <!-- Основной контейнер с боковой панелью -->
+    <div class="main-layout">
+        <!-- Левая боковая панель навигации будет добавлена через navigation.js -->
+        
+        <!-- Главный контент -->
+        <main class="main-content-wrapper">
+        <div class="chat-page-container">
+            <!-- Панель для неавторизованных пользователей -->
+            <div id="unauthorizedPanel" class="unauthorized-panel">
+                <div class="unauthorized-content">
+                    <div class="unauthorized-emoji">😊</div>
+                    <h2 class="unauthorized-title">Аяяй, тебе сюда нельзя!</h2>
+                    <p class="unauthorized-desc">
+                        Чтобы зайти в чат, нужно сначала войти в аккаунт. 
+                        <br>Сверху в верхней панели есть кнопочки <strong>"Войти"</strong> и <strong>"Регистрация"</strong>.
+                        <br>Войдешь - можешь приходить сюда! 😄
+                    </p>
+                    <div class="unauthorized-actions">
+                        <button type="button" class="btn btn-primary unauthorized-btn-disabled" id="unauthorizedLoginBtn" disabled>
+                            Войти
+                        </button>
+                        <button type="button" class="btn btn-secondary unauthorized-btn-disabled" id="unauthorizedRegisterBtn" disabled>
+                            Регистрация
+                        </button>
+                    </div>
+                    <p class="unauthorized-hint">
+                        Используйте кнопки в верхней панели для входа или регистрации
+                    </p>
+                </div>
+            </div>
+            <!-- Контейнер чата (показывается только для авторизованных) -->
+            <div id="chatContainer"></div>
+        </div>
+        </main>
+    </div>
+
+    <!-- Модальные окна будут созданы через navigation.js -->
+
+    <!-- Скрипты -->
+    <script src="scripts/data.js"></script>
+    <script src="scripts/anilist-api.js"></script>
+    <script src="scripts/api.js"></script>
+    <script src="scripts/utils.js"></script>
+    <script src="scripts/utils-notifications.js"></script>
+    <!-- Конфигурация приложения (загружается перед другими скриптами) -->
+    <script src="scripts/config.js"></script>
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="scripts/supabase-config.js"></script>
+    <script src="scripts/direct-messages.js"></script>
+    <script src="scripts/navigation.js"></script>
+    <script src="scripts/auth.js"></script>
+    <script src="scripts/loading-phrases.js"></script>
+    <script src="scripts/notifications.js"></script>
+    <script src="scripts/register.js"></script>
+    <script src="scripts/main.js"></script>
+    <script src="scripts/loading.js"></script>
+    <script src="scripts/global-chat.js"></script>
+    <script src="scripts/apply-navigation.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const unauthorizedPanel = document.getElementById('unauthorizedPanel');
+            const chatContainer = document.getElementById('chatContainer');
+            
+            // Проверяем авторизацию асинхронно
+            const authenticated = await isAuthenticated();
+            
+            if (!authenticated) {
+                // Показываем панель для неавторизованных
+                if (unauthorizedPanel) {
+                    unauthorizedPanel.style.display = 'block';
+                }
+                if (chatContainer) {
+                    chatContainer.style.display = 'none';
+                }
+                
+                // Кнопки неактивны - это просто подсказка
+                // Пользователь должен использовать кнопки в верхней панели
+                
+                // Слушаем изменения авторизации, чтобы автоматически показать чат после входа
+                if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+                    supabaseClient.auth.onAuthStateChange(async (event, session) => {
+                        if (event === 'SIGNED_IN' && session) {
+                            // Пользователь вошел - скрываем панель и показываем чат
+                            if (unauthorizedPanel) {
+                                unauthorizedPanel.style.display = 'none';
+                            }
+                            if (chatContainer) {
+                                chatContainer.style.display = 'block';
+                            }
+                            
+                            // Инициализируем чат
+                            const globalChat = new GlobalChat();
+                            await globalChat.init('chatContainer');
+                            window.globalChat = globalChat;
+                            
+                            // Очищаем Realtime подписку при закрытии страницы
+                            window.addEventListener('beforeunload', () => {
+                                if (globalChat.stopRealtime) {
+                                    globalChat.stopRealtime();
+                                }
+                            });
+                        }
+                    });
+                }
+                
+                return;
+            }
+            
+            // Пользователь авторизован - показываем чат
+            if (unauthorizedPanel) {
+                unauthorizedPanel.style.display = 'none';
+            }
+            if (chatContainer) {
+                chatContainer.style.display = 'block';
+            }
+            
+            const globalChat = new GlobalChat();
+            await globalChat.init('chatContainer');
+            window.globalChat = globalChat;
+            
+            // Очищаем Realtime подписку при закрытии страницы
+            window.addEventListener('beforeunload', () => {
+                if (globalChat.stopRealtime) {
+                    globalChat.stopRealtime();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+

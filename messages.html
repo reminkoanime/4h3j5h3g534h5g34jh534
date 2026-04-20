@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <script src="scripts/desktop-only-guard.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сообщения - Re-Minko</title>
+    <meta
+        name="description"
+        content="Личные сообщения Re-Minko: переписка с пользователями аниме-сайта. re-minko-anime.com."
+    />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://re-minko-anime.com/messages.html" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Сообщения — Re-Minko" />
+    <meta property="og:description" content="Личные сообщения на re-minko-anime.com." />
+    <meta property="og:url" content="https://re-minko-anime.com/messages.html" />
+    <meta property="og:image" content="https://re-minko-anime.com/Fons/fonG.jpg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="Fons/vavo/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="Fons/vavo/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="Fons/vavo/favicon-16x16.png">
+    <link rel="manifest" href="Fons/vavo/site.webmanifest">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/sidebar-layout.css">
+    <link rel="stylesheet" href="styles/loading.css">
+    <link rel="stylesheet" href="styles/notifications.css">
+    <link rel="stylesheet" href="styles/messages.css">
+</head>
+<body>
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Загрузка<span class="loading-dots"></span></div>
+    </div>
+
+    <div class="main-layout">
+        <main class="main-content-wrapper msg-v2-page-wrap">
+            <div class="msg-v2-app" id="msgV2App">
+                <aside class="msg-v2-sidebar" id="msgV2Sidebar">
+                    <div class="msg-v2-head">
+                        <h1 class="msg-v2-title">Сообщения</h1>
+                        <a href="friends.html" class="msg-v2-head-btn" title="Друзья — написать кому-то новому" aria-label="К друзьям">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                        </a>
+                    </div>
+                    <div class="msg-v2-search-wrap">
+                        <div class="msg-v2-search-inner">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
+                            <input type="text" class="msg-v2-search" id="msgV2SearchInput" placeholder="Поиск друзей..." autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="msg-v2-chat-list" id="msgV2ChatList">
+                        <div class="msg-v2-empty" id="msgV2ListEmpty" style="display: none;">
+                            <div class="msg-v2-empty-icon">
+                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                            </div>
+                            <div class="msg-v2-empty-title">Нет диалогов</div>
+                            <div class="msg-v2-empty-hint">Откройте профиль друга или раздел «Друзья» и нажмите «Написать»</div>
+                        </div>
+                    </div>
+                </aside>
+
+                <main class="msg-v2-main" id="msgV2Main">
+                    <div class="msg-v2-empty-main" id="msgV2EmptyState">
+                        <div class="msg-v2-empty-icon">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                        </div>
+                        <p style="font-size:1rem;font-weight:700;color:#e2e8f0;margin:0;">Выберите чат</p>
+                        <p style="font-size:0.8rem;margin:0.35rem 0 0;opacity:0.6;">Начните общение с друзьями</p>
+                    </div>
+
+                    <div class="msg-v2-active" id="msgV2ActiveChat">
+                        <div class="msg-v2-chat-header">
+                            <button type="button" class="msg-v2-back" id="msgV2BackBtn" aria-label="Назад">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"></path></svg>
+                            </button>
+                            <div class="msg-v2-header-avatar-wrap" id="msgV2HeaderAvatarWrap"></div>
+                            <div class="msg-v2-header-text">
+                                <div class="msg-v2-header-name" id="msgV2HeaderName"></div>
+                                <div class="msg-v2-header-status" id="msgV2HeaderStatus"></div>
+                            </div>
+                            <div class="msg-v2-menu-wrap">
+                                <button type="button" class="msg-v2-menu-btn" id="msgV2MenuBtn" aria-haspopup="true" aria-expanded="false">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.5"></circle><circle cx="12" cy="12" r="1.5"></circle><circle cx="12" cy="19" r="1.5"></circle></svg>
+                                </button>
+                                <div class="msg-v2-dropdown" id="msgV2Dropdown">
+                                    <button type="button" id="msgV2PinBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 17v5"></path><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16h14v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a2 2 0 0 0-2-2H11a2 2 0 0 0-2 2z"></path></svg> Закрепить</button>
+                                    <button type="button" class="danger" id="msgV2DeleteBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg> Скрыть из списка</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="msg-v2-messages" id="msgV2Messages"></div>
+                        <div class="msg-v2-input-bar">
+                            <form class="msg-v2-input-form" id="msgV2SendForm">
+                                <button type="button" class="msg-v2-attach" disabled title="Скоро" aria-disabled="true">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+                                </button>
+                                <div class="msg-v2-input-wrap">
+                                    <textarea id="msgV2Textarea" class="msg-v2-textarea" rows="1" placeholder="Написать сообщение..." maxlength="1000"></textarea>
+                                </div>
+                                <button type="submit" class="msg-v2-send" aria-label="Отправить">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </main>
+    </div>
+
+    <div class="msg-v2-toast" id="msgV2Toast" role="status"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="scripts/supabase-config.js"></script>
+    <script src="scripts/direct-messages.js"></script>
+    <script src="scripts/config.js"></script>
+    <script src="scripts/utils-notifications.js"></script>
+    <script src="scripts/auth.js"></script>
+    <script src="scripts/data.js"></script>
+    <script src="scripts/utils.js"></script>
+    <script src="scripts/loading.js"></script>
+    <script src="scripts/navigation.js"></script>
+    <script src="scripts/notifications.js" defer></script>
+    <script src="scripts/apply-navigation.js" defer></script>
+
+    <script>
+        const DM_PINS_KEY = 'reminko_dm_pins';
+        const DM_HIDDEN_TS_KEY = 'reminko_dm_hidden_ts';
+
+        let currentUserId = null;
+        let activeChatUserId = null;
+        let chatPollInterval = null;
+        let convPollInterval = null;
+        let lastConvFilter = '';
+
+        function getPinnedOrder() {
+            try {
+                const raw = localStorage.getItem(DM_PINS_KEY);
+                const arr = raw ? JSON.parse(raw) : [];
+                return Array.isArray(arr) ? arr.map(String) : [];
+            } catch (_) {
+                return [];
+            }
+        }
+
+        function setPinnedOrder(ids) {
+            localStorage.setItem(DM_PINS_KEY, JSON.stringify(ids));
+        }
+
+        function getHiddenTsMap() {
+            try {
+                const raw = localStorage.getItem(DM_HIDDEN_TS_KEY);
+                const o = raw ? JSON.parse(raw) : {};
+                return o && typeof o === 'object' ? o : {};
+            } catch (_) {
+                return {};
+            }
+        }
+
+        function setHiddenTsMap(map) {
+            localStorage.setItem(DM_HIDDEN_TS_KEY, JSON.stringify(map));
+        }
+
+        function isConvHidden(userId, lastMsgAt) {
+            const map = getHiddenTsMap();
+            const ts = map[userId];
+            if (ts == null) return false;
+            return new Date(lastMsgAt).getTime() <= Number(ts);
+        }
+
+        function hideConversation(userId) {
+            const map = getHiddenTsMap();
+            map[userId] = Date.now();
+            setHiddenTsMap(map);
+        }
+
+        function hashColor(id) {
+            const colors = ['#e300ff', '#ff3d8a', '#00c3ff', '#a855f7', '#ff6b35', '#10b981', '#eab308'];
+            let h = 0;
+            const str = String(id || '');
+            for (let i = 0; i < str.length; i++) h = str.charCodeAt(i) + ((h << 5) - h);
+            return colors[Math.abs(h) % colors.length];
+        }
+
+        function userInitials(username) {
+            const s = (username || '?').trim();
+            return s.slice(0, 2).toUpperCase();
+        }
+
+        function makeHeaderInitialEl(col, text) {
+            const div = document.createElement('div');
+            div.className = 'msg-v2-header-initial';
+            div.style.background = col + '22';
+            div.style.color = col;
+            div.textContent = text;
+            return div;
+        }
+
+        function sortConversations(list) {
+            const pinned = getPinnedOrder();
+            return list.slice().sort((a, b) => {
+                const ap = pinned.indexOf(String(a.userId));
+                const bp = pinned.indexOf(String(b.userId));
+                const aP = ap >= 0;
+                const bP = bp >= 0;
+                if (aP && !bP) return -1;
+                if (!aP && bP) return 1;
+                if (aP && bP) return ap - bp;
+                return new Date(b.lastMessage.created_at) - new Date(a.lastMessage.created_at);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (!session?.user) {
+                    window.location.href = 'index.html';
+                    return;
+                }
+                currentUserId = session.user.id;
+
+                const urlParams = new URLSearchParams(window.location.search);
+                const chatWith = urlParams.get('user');
+
+                await loadConversations();
+                if (chatWith) openChat(chatWith);
+
+                startConvPolling();
+                hideLoading();
+            } catch (e) {
+                console.error('Messages init error:', e);
+                hideLoading();
+            }
+
+            const search = document.getElementById('msgV2SearchInput');
+            if (search) {
+                search.addEventListener('input', () => {
+                    lastConvFilter = search.value;
+                    loadConversations(lastConvFilter);
+                });
+            }
+
+            document.getElementById('msgV2BackBtn').addEventListener('click', () => closeChat());
+            document.getElementById('msgV2MenuBtn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                const d = document.getElementById('msgV2Dropdown');
+                const open = d.classList.toggle('is-open');
+                document.getElementById('msgV2MenuBtn').setAttribute('aria-expanded', open ? 'true' : 'false');
+                if (open) updatePinButtonLabel();
+            });
+            document.addEventListener('click', () => {
+                document.getElementById('msgV2Dropdown').classList.remove('is-open');
+                document.getElementById('msgV2MenuBtn').setAttribute('aria-expanded', 'false');
+            });
+
+            document.getElementById('msgV2PinBtn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                pinActiveChat();
+            });
+            document.getElementById('msgV2DeleteBtn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                deleteActiveChat();
+            });
+
+            document.getElementById('msgV2SendForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                sendDm();
+            });
+
+            const ta = document.getElementById('msgV2Textarea');
+            if (ta) {
+                ta.addEventListener('input', () => autoResizeTextarea(ta));
+                ta.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        sendDm();
+                    }
+                });
+            }
+        });
+
+        function showMsgToast(text) {
+            const t = document.getElementById('msgV2Toast');
+            t.textContent = text;
+            t.classList.add('is-visible');
+            clearTimeout(showMsgToast._tid);
+            showMsgToast._tid = setTimeout(() => t.classList.remove('is-visible'), 2800);
+        }
+
+        async function loadConversations(filter) {
+            const conversations = await DirectMessagesService.getConversations();
+            const f = filter != null ? filter : lastConvFilter;
+            renderConversations(conversations, f);
+        }
+
+        function renderConversations(conversations, filter) {
+            const list = document.getElementById('msgV2ChatList');
+            const empty = document.getElementById('msgV2ListEmpty');
+            if (!list) return;
+
+            let filtered = conversations.filter((c) => !isConvHidden(c.userId, c.lastMessage.created_at));
+
+            if (filter) {
+                const q = filter.toLowerCase();
+                filtered = filtered.filter((c) => c.profile?.username?.toLowerCase().includes(q));
+            }
+
+            filtered = sortConversations(filtered);
+
+            list.querySelectorAll('.msg-v2-item').forEach((el) => el.remove());
+
+            if (filtered.length === 0) {
+                empty.style.display = 'flex';
+                return;
+            }
+            empty.style.display = 'none';
+
+            const pinned = getPinnedOrder();
+
+            for (const conv of filtered) {
+                const profile = conv.profile || {};
+                const isOnline = profile.last_online && Date.now() - new Date(profile.last_online).getTime() < 5 * 60 * 1000;
+                const activity = profile.current_activity;
+                const isWatching = isOnline && activity?.type === 'watching';
+
+                const lastMsg = conv.lastMessage;
+                const isMine = lastMsg.sender_id === currentUserId;
+                let preview = (isMine ? 'Вы: ' : '') + truncate(lastMsg.message, 42);
+                if (isWatching && !isMine) preview = '📺 Смотрит: ' + (activity.title || '');
+                const time = formatShortTime(lastMsg.created_at);
+
+                const isPinned = pinned.includes(String(conv.userId));
+                const col = hashColor(conv.userId);
+                const name = escapeHtml(profile.username || 'Пользователь');
+                const initials = escapeHtml(userInitials(profile.username));
+
+                const div = document.createElement('div');
+                div.className = 'msg-v2-item' + (activeChatUserId === conv.userId ? ' active' : '');
+                div.dataset.userId = conv.userId;
+                div.onclick = () => openChat(conv.userId);
+
+                const dotClass = isWatching ? 'watching' : isOnline ? '' : 'offline';
+                const avatarBlock = profile.avatar
+                    ? `<img class="msg-v2-item-avatar" src="${escapeHtml(profile.avatar)}" alt="" onerror="this.onerror=null;this.src='Fons/seitFon.jpg'">`
+                    : `<div class="msg-v2-item-initial" style="background:${col}22;color:${col}">${initials}</div>`;
+
+                div.innerHTML = `
+                    <div class="msg-v2-item-avatar-wrap">
+                        ${avatarBlock}
+                        <span class="msg-v2-online-dot ${dotClass === 'offline' ? 'offline' : dotClass === 'watching' ? 'watching' : ''}"></span>
+                    </div>
+                    <div class="msg-v2-item-body">
+                        <div class="msg-v2-item-top">
+                            <div class="msg-v2-item-name-row">
+                                <span class="msg-v2-item-name">${name}</span>
+                                ${isPinned ? '<span class="msg-v2-item-pin" title="Закреплён"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 17v5"></path><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16h14v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a2 2 0 0 0-2-2H11a2 2 0 0 0-2 2z"></path></svg></span>' : ''}
+                            </div>
+                            <span class="msg-v2-item-time">${time}</span>
+                        </div>
+                        <div class="msg-v2-item-bottom">
+                            <span class="msg-v2-item-preview">${escapeHtml(preview)}</span>
+                            ${conv.unreadCount > 0 ? `<span class="msg-v2-unread">${conv.unreadCount > 99 ? '99+' : conv.unreadCount}</span>` : ''}
+                        </div>
+                    </div>
+                `;
+                list.appendChild(div);
+            }
+        }
+
+        function setMobileChatOpen(open) {
+            const sidebar = document.getElementById('msgV2Sidebar');
+            const main = document.getElementById('msgV2Main');
+            if (open) {
+                sidebar.classList.add('is-hidden-mobile');
+                main.classList.add('is-open-mobile');
+            } else {
+                sidebar.classList.remove('is-hidden-mobile');
+                main.classList.remove('is-open-mobile');
+            }
+        }
+
+        function setEmptyMainVisible(show) {
+            const el = document.getElementById('msgV2EmptyState');
+            const active = document.getElementById('msgV2ActiveChat');
+            if (show) {
+                el.style.display = 'flex';
+                active.classList.remove('is-visible');
+            } else {
+                el.style.display = 'none';
+                active.classList.add('is-visible');
+            }
+        }
+
+        async function openChat(userId) {
+            activeChatUserId = userId;
+            setMobileChatOpen(true);
+            setEmptyMainVisible(false);
+
+            const profile = await DirectMessagesService.getProfile(userId);
+            const isOnline = profile?.last_online && Date.now() - new Date(profile.last_online).getTime() < 5 * 60 * 1000;
+            const activity = profile?.current_activity;
+            const col = hashColor(userId);
+            const initials = userInitials(profile?.username);
+
+            const wrap = document.getElementById('msgV2HeaderAvatarWrap');
+            const profileUrl = 'profile.html?user=' + encodeURIComponent(userId);
+            const dotCls = isOnline && activity?.type === 'watching' ? 'watch' : isOnline ? 'on' : 'off';
+            wrap.innerHTML =
+                '<a class="msg-v2-header-avatar-link" href="' +
+                profileUrl +
+                '"><span class="msg-v2-header-online ' +
+                dotCls +
+                '"></span></a>';
+            const link = wrap.querySelector('a');
+            const dot = link.querySelector('.msg-v2-header-online');
+            if (profile?.avatar) {
+                const img = document.createElement('img');
+                img.className = 'msg-v2-header-avatar';
+                img.alt = '';
+                img.src = profile.avatar;
+                img.onerror = () => {
+                    img.replaceWith(makeHeaderInitialEl(col, initials));
+                };
+                link.insertBefore(img, dot);
+            } else {
+                link.insertBefore(makeHeaderInitialEl(col, initials), dot);
+            }
+
+            document.getElementById('msgV2HeaderName').innerHTML =
+                '<a href="' + profileUrl + '">' + escapeHtml(profile?.username || 'Пользователь') + '</a>';
+
+            const st = document.getElementById('msgV2HeaderStatus');
+            st.className = 'msg-v2-header-status';
+            if (isOnline && activity?.type === 'watching' && activity.title) {
+                st.textContent = '📺 Смотрит: ' + activity.title;
+                st.classList.add('watching');
+            } else if (isOnline) {
+                st.textContent = 'В сети';
+                st.classList.add('online');
+            } else if (profile?.last_online) {
+                st.textContent = 'Был(а) ' + formatRelativeTime(profile.last_online);
+            } else {
+                st.textContent = '';
+            }
+
+            document.getElementById('msgV2Dropdown').classList.remove('is-open');
+            const ta = document.getElementById('msgV2Textarea');
+            ta.value = '';
+            autoResizeTextarea(ta);
+
+            await loadChatMessages(userId);
+            await DirectMessagesService.markAsRead(userId);
+            startChatPolling(userId);
+
+            DirectMessagesService.subscribeToChat(userId, (msg) => {
+                if (msg.sender_id === userId || msg.sender_id === currentUserId) {
+                    appendMessage(msg);
+                    if (msg.sender_id === userId) DirectMessagesService.markAsRead(userId);
+                }
+            });
+
+            loadConversations(lastConvFilter);
+        }
+
+        function autoResizeTextarea(el) {
+            if (!el) return;
+            el.style.height = 'auto';
+            el.style.height = Math.min(el.scrollHeight, 128) + 'px';
+        }
+
+        async function loadChatMessages(userId) {
+            const messages = await DirectMessagesService.getMessages(userId);
+            const container = document.getElementById('msgV2Messages');
+            if (!container) return;
+            container.innerHTML = '';
+
+            let lastDate = '';
+            for (const msg of messages) {
+                const date = new Date(msg.created_at).toLocaleDateString('ru-RU');
+                if (date !== lastDate) {
+                    lastDate = date;
+                    const d = document.createElement('div');
+                    d.className = 'msg-v2-date';
+                    d.textContent = formatDateLabel(msg.created_at);
+                    container.appendChild(d);
+                }
+                container.appendChild(createMsgElement(msg));
+            }
+            scrollToBottom();
+        }
+
+        function appendMessage(msg) {
+            const container = document.getElementById('msgV2Messages');
+            if (!container) return;
+            if (container.querySelector(`[data-msg-id="${msg.id}"]`)) return;
+            container.appendChild(createMsgElement(msg));
+            scrollToBottom();
+        }
+
+        function createMsgElement(msg) {
+            const isMine = msg.sender_id === currentUserId;
+            const row = document.createElement('div');
+            row.className = 'msg-v2-row ' + (isMine ? 'out' : 'in');
+            row.dataset.msgId = msg.id;
+            const bubble = document.createElement('div');
+            bubble.className = isMine ? 'msg-v2-bubble-out' : 'msg-v2-bubble-in';
+            bubble.innerHTML =
+                '<p style="margin:0;">' +
+                escapeHtml(msg.message) +
+                '</p><div class="msg-v2-bubble-time">' +
+                formatMsgTime(msg.created_at) +
+                '</div>';
+            row.appendChild(bubble);
+            return row;
+        }
+
+        async function sendDm() {
+            const input = document.getElementById('msgV2Textarea');
+            if (!input || !activeChatUserId) return;
+            const text = input.value.trim();
+            if (!text) return;
+            input.value = '';
+            autoResizeTextarea(input);
+            const msg = await DirectMessagesService.sendMessage(activeChatUserId, text);
+            if (msg) appendMessage(msg);
+        }
+
+        function updatePinButtonLabel() {
+            if (!activeChatUserId) return;
+            const pinned = getPinnedOrder();
+            const isP = pinned.includes(String(activeChatUserId));
+            const btn = document.getElementById('msgV2PinBtn');
+            btn.innerHTML = isP
+                ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 17v5"></path><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16h14v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a2 2 0 0 0-2-2H11a2 2 0 0 0-2 2z"></path></svg> Открепить'
+                : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 17v5"></path><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16h14v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a2 2 0 0 0-2-2H11a2 2 0 0 0-2 2z"></path></svg> Закрепить';
+        }
+
+        function pinActiveChat() {
+            if (!activeChatUserId) return;
+            const id = String(activeChatUserId);
+            let pinned = getPinnedOrder();
+            const i = pinned.indexOf(id);
+            if (i >= 0) {
+                pinned.splice(i, 1);
+                showMsgToast('Чат откреплён');
+            } else {
+                pinned = [id, ...pinned.filter((x) => x !== id)];
+                showMsgToast('Чат закреплён');
+            }
+            setPinnedOrder(pinned);
+            document.getElementById('msgV2Dropdown').classList.remove('is-open');
+            loadConversations(lastConvFilter);
+        }
+
+        function deleteActiveChat() {
+            if (!activeChatUserId) return;
+            if (!confirm('Скрыть этот диалог из списка? Новые сообщения снова покажут чат.')) return;
+            hideConversation(String(activeChatUserId));
+            document.getElementById('msgV2Dropdown').classList.remove('is-open');
+            showMsgToast('Диалог скрыт из списка');
+            closeChat();
+        }
+
+        function closeChat() {
+            activeChatUserId = null;
+            stopChatPolling();
+            DirectMessagesService.unsubscribeFromChat();
+            setMobileChatOpen(false);
+            setEmptyMainVisible(true);
+            document.getElementById('msgV2Messages').innerHTML = '';
+            loadConversations(lastConvFilter);
+        }
+
+        function startChatPolling(userId) {
+            stopChatPolling();
+            chatPollInterval = setInterval(async () => {
+                if (activeChatUserId !== userId) return;
+                const msgs = await DirectMessagesService.getMessages(userId);
+                const container = document.getElementById('msgV2Messages');
+                if (!container) return;
+                const existing = new Set([...container.querySelectorAll('[data-msg-id]')].map((e) => e.dataset.msgId));
+                for (const msg of msgs) {
+                    if (!existing.has(msg.id)) {
+                        appendMessage(msg);
+                        if (msg.sender_id === userId) DirectMessagesService.markAsRead(userId);
+                    }
+                }
+            }, 3000);
+        }
+
+        function stopChatPolling() {
+            if (chatPollInterval) {
+                clearInterval(chatPollInterval);
+                chatPollInterval = null;
+            }
+        }
+
+        function startConvPolling() {
+            convPollInterval = setInterval(() => {
+                if (!activeChatUserId) {
+                    lastConvFilter = document.getElementById('msgV2SearchInput')?.value || '';
+                    loadConversations(lastConvFilter);
+                }
+            }, 5000);
+        }
+
+        function scrollToBottom() {
+            const c = document.getElementById('msgV2Messages');
+            if (c) c.scrollTop = c.scrollHeight;
+        }
+
+        function escapeHtml(t) {
+            return t ? String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;') : '';
+        }
+        function truncate(s, m) {
+            return s ? (s.length > m ? s.substring(0, m) + '…' : s) : '';
+        }
+        function formatShortTime(d) {
+            const dt = new Date(d),
+                now = new Date(),
+                dd = Math.floor((now - dt) / 864e5);
+            if (dd === 0) return dt.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+            if (dd === 1) return 'Вчера';
+            if (dd < 7) return dt.toLocaleDateString('ru-RU', { weekday: 'short' });
+            return dt.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
+        }
+        function formatMsgTime(d) {
+            return new Date(d).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+        }
+        function formatDateLabel(d) {
+            const dt = new Date(d),
+                now = new Date(),
+                dd = Math.floor((now - dt) / 864e5);
+            if (dd === 0) return 'Сегодня';
+            if (dd === 1) return 'Вчера';
+            return dt.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+        }
+        function formatRelativeTime(d) {
+            const dt = new Date(d),
+                m = Math.floor((Date.now() - dt) / 6e4);
+            if (m < 1) return 'только что';
+            if (m < 60) return m + ' мин. назад';
+            const h = Math.floor(m / 60);
+            if (h < 24) return h + ' ч. назад';
+            return new Date(d).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
+        }
+        function hideLoading() {
+            const el = document.getElementById('loadingScreen');
+            if (el) el.style.display = 'none';
+            if (typeof window.dispatchReminkoLoadingHidden === 'function') window.dispatchReminkoLoadingHidden();
+        }
+    </script>
+</body>
+</html>

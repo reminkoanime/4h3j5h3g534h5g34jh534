@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <script src="scripts/desktop-only-guard.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- До загрузки внешних CSS: тёмный фон и базовая сетка (убирает «белую кашу» и огромные картинки/Live2D при F5) -->
+    <style id="minko-ai-critical">
+        html {
+            background: #0d0d14;
+        }
+        body.minko-ai-page {
+            margin: 0;
+            min-height: 100vh;
+            background: #0d0d14;
+            color: #e5e7eb;
+            overflow-x: hidden;
+        }
+        body.minko-ai-page .loading-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        body.minko-ai-page .main-layout {
+            display: flex;
+            min-height: 100vh;
+            width: 100%;
+        }
+        body.minko-ai-page .main-content-wrapper {
+            flex: 1;
+            min-width: 0;
+            padding: 1rem;
+            box-sizing: border-box;
+        }
+        body.minko-ai-page .minko-ai-wrap {
+            max-width: 860px;
+            margin: 0 auto;
+            background: rgba(227, 0, 255, 0.04);
+            border: 1px solid rgba(227, 0, 255, 0.15);
+            border-radius: 12px;
+            box-sizing: border-box;
+        }
+        body.minko-ai-page .minko-ai-head {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 16px 18px;
+            border-bottom: 1px solid rgba(227, 0, 255, 0.15);
+        }
+        body.minko-ai-page .top-nav-container {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        body.minko-ai-page .top-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: inherit;
+        }
+        body.minko-ai-page .top-logo-img {
+            max-height: 36px;
+            width: auto;
+            border-radius: 6px;
+        }
+        body.minko-ai-page img {
+            max-width: 100%;
+            height: auto;
+        }
+        body.minko-ai-page .minko-ai-head-img,
+        body.minko-ai-page .minko-msg-avatar img,
+        body.minko-ai-page .message-avatar img {
+            width: 48px;
+            height: 48px;
+            max-width: 48px;
+            max-height: 48px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+        body.minko-ai-page .minko-msg-avatar img,
+        body.minko-ai-page .message-avatar img {
+            width: 36px;
+            height: 36px;
+            max-width: 36px;
+            max-height: 36px;
+        }
+        #live2d-widget.live2d-widget-container {
+            position: fixed !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            z-index: 9998 !important;
+            max-width: min(280px, 100vw) !important;
+            max-height: min(520px, 70vh) !important;
+            overflow: hidden !important;
+            pointer-events: none;
+        }
+    </style>
+    <title>Минко AI, Minko AI — ИИ-помощник по аниме и манге | Re-Minko</title>
+    <meta
+        name="description"
+        content="Минко AI (Minko AI) на Re-Minko: чат-бот про аниме и мангу, подбор тайтлов, ответы и помощь. re-minko-anime.com."
+    />
+    <meta
+        name="keywords"
+        content="Минко AI, Minko AI, минко ии, ии аниме, чат бот аниме, помощник по аниме, сайт Re-Minko"
+    />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://re-minko-anime.com/minko-ai.html" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Минко AI — помощник по аниме и манге" />
+    <meta property="og:url" content="https://re-minko-anime.com/minko-ai.html" />
+    <meta property="og:description" content="ИИ-помощник Минко AI: вопросы про аниме, мангу и сайт Re-Minko." />
+    <meta property="og:image" content="https://re-minko-anime.com/Fons/fonG.jpg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="Fons/vavo/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="Fons/vavo/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="Fons/vavo/favicon-16x16.png">
+    <link rel="manifest" href="Fons/vavo/site.webmanifest">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="styles/main.css" as="style" />
+    <link rel="preload" href="styles/sidebar-layout.css" as="style" />
+    <link rel="preload" href="styles/minko-ai.css" as="style" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap"
+        rel="stylesheet"
+        media="print"
+        onload="this.media='all'"
+    />
+    <noscript>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap"
+            rel="stylesheet"
+        />
+    </noscript>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/sidebar-layout.css">
+    <link rel="stylesheet" href="styles/minko-ai.css">
+    <link rel="stylesheet" href="styles/loading.css">
+    <link rel="stylesheet" href="styles/register-flow.css">
+    <link rel="stylesheet" href="styles/notifications.css">
+</head>
+<body class="minko-ai-page">
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Загрузка<span class="loading-dots"></span></div>
+    </div>
+
+    <div class="main-layout">
+        <main class="main-content-wrapper minko-ai-main">
+            <div class="minko-ai-wrap">
+                <!-- Шапка (статус обновляет minko-ai.js — классы сохранены) -->
+                <header class="minko-ai-head">
+                    <div class="minko-ai-head-avatar">
+                        <img src="Fons/AI ICON.jpg" alt="Minko AI" class="minko-ai-head-img" width="48" height="48" decoding="async" fetchpriority="high">
+                        <span class="minko-ai-head-dot offline"></span>
+                    </div>
+                    <div class="minko-ai-head-text">
+                        <h1 class="minko-ai-head-title">🌸 Minko AI</h1>
+                        <div class="minko-ai-head-meta">
+                            <p class="minko-ai-head-status">Проверка подключения...</p>
+                            <span class="minko-header-vip-live" aria-hidden="true">✨ VIP</span>
+                            <a id="buyMinkoVipBtn" class="minko-clear-chat-btn" href="profile.html?tab=services" title="Купить VIP Minko AI" style="display:none;">⭐ VIP</a>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Область сообщений -->
+                <div class="minko-ai-chat chat-messages" id="chatMessages">
+                    <div class="minko-msg message message-assistant">
+                        <div class="minko-msg-avatar message-avatar">
+                            <img src="Fons/AI ICON.jpg" alt="" width="36" height="36" decoding="async">
+                        </div>
+                        <div class="minko-msg-body message-content">
+                            <div class="minko-msg-bubble message-bubble">
+                                <p>Привет! Я Minko AI ✨</p>
+                                <p>Спрашивай про аниме, мангу и сайт — помогу с чем угодно.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="minkoThrottleWarn" class="minko-throttle-warn" hidden aria-hidden="true">
+                    ⏱️ Слишком быстро! Подождите перед отправкой нового сообщения
+                </div>
+
+                <!-- Поле ввода -->
+                <div class="minko-ai-foot">
+                    <form class="minko-ai-form" id="chatForm" onsubmit="event.preventDefault(); if(window.sendMessage) window.sendMessage(); return false;">
+                        <div class="minko-ai-input-wrap chat-input-inner">
+                            <div class="minko-ai-input-zone chat-input-area" id="chatInputArea">
+                                <textarea id="chatInput" class="minko-ai-input chat-input" rows="1" placeholder="Написать Minko..." autocomplete="off"></textarea>
+                            </div>
+                            <button type="submit" id="sendButton" class="minko-ai-send send-button minko-ai-send--labeled" title="Отправить">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                                </svg>
+                                <span class="minko-send-label">Отправить</span>
+                            </button>
+                        </div>
+                        <div class="minko-ai-hint-row">
+                            <p class="minko-ai-hint">Enter — отправить · Shift+Enter — новая строка</p>
+                            <div class="minko-ai-msg-counter" id="msgCounter"></div>
+                        </div>
+                    </form>
+                    <div class="minko-ai-status minko-ai-status-line" id="chatStatus"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Модальные окна входа/регистрации (без изменений структуры для auth.js) -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content auth-modal">
+            <span class="close" id="closeLoginModal">&times;</span>
+            <h2 class="modal-title">Вход на сайт</h2>
+            <div class="login-form">
+                <div class="form-group">
+                    <label for="loginEmail">Почта:</label>
+                    <input type="email" id="loginEmail" placeholder="Введите вашу почту" required autocomplete="email">
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Пароль:</label>
+                    <div class="password-input-wrapper">
+                        <input type="password" id="loginPassword" class="password-input" placeholder="Введите пароль" required autocomplete="current-password">
+                        <button type="button" id="toggleLoginPassword" class="password-toggle-btn" title="Показать/скрыть пароль" aria-label="Показать/скрыть пароль">
+                            <svg id="loginPasswordEyeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="form-options">
+                    <label class="checkbox-label"><input type="checkbox"> Не запоминать меня</label>
+                    <a href="#" class="forgot-password">Забыли пароль?</a>
+                </div>
+                <div id="loginError" class="error-message"></div>
+                <button class="btn btn-primary btn-block" id="loginSubmit">Войти на сайт</button>
+                <div class="divider"><span>или</span></div>
+                <button class="btn btn-google" id="googleLogin">Войти через Google</button>
+                <div class="register-link"><p>Нет аккаунта? <a href="#" id="switchToRegister" data-maint-lock="register">Регистрация</a></p></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="registerModal">
+        <div class="modal-content auth-modal">
+            <span class="close" id="closeRegisterModal">&times;</span>
+            <h2 class="modal-title">Регистрация</h2>
+            <div class="login-form">
+                <div class="form-group">
+                    <label for="registerEmail">Почта:</label>
+                    <input type="email" id="registerEmail" placeholder="Введите вашу почту" required autocomplete="email">
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Пароль:</label>
+                    <input type="password" id="registerPassword" placeholder="Введите пароль (минимум 6 символов)" required autocomplete="new-password">
+                </div>
+                <div class="form-group">
+                    <label for="registerUsername">Имя пользователя:</label>
+                    <input type="text" id="registerUsername" placeholder="Введите имя" required autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <span class="form-label">Ваш пол:</span>
+                    <div class="gender-selection">
+                        <label class="gender-label">
+                            <input type="radio" name="registerGender" value="male" checked class="gender-radio">
+                            Мужской
+                        </label>
+                        <label class="gender-label">
+                            <input type="radio" name="registerGender" value="female" class="gender-radio">
+                            Женский
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Выберите аватар:</label>
+                    <div class="avatar-selection-grid" id="avatarSelectionGrid"></div>
+                </div>
+                <div id="registerError" class="error-message"></div>
+                <button type="button" class="btn btn-primary btn-block" id="registerSubmit" data-maint-lock="register">Зарегистрироваться</button>
+                <div class="register-link"><p>Уже есть аккаунт? <a href="#" id="switchToLogin">Войти</a></p></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="scripts/config.js"></script>
+    <script src="scripts/data.js"></script>
+    <script src="scripts/jikan-api.js"></script>
+    <script src="scripts/anilist-api.js"></script>
+    <script src="scripts/api.js"></script>
+    <script src="scripts/utils.js"></script>
+    <script src="scripts/utils-notifications.js"></script>
+    <script src="scripts/auth.js"></script>
+    <script src="scripts/loading-phrases.js"></script>
+    <script src="scripts/notifications.js"></script>
+    <script src="scripts/register.js"></script>
+    <script src="scripts/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="scripts/supabase-config.js"></script>
+    <script src="scripts/creator-privileges.js"></script>
+    <script src="scripts/direct-messages.js"></script>
+    <script src="scripts/navigation.js"></script>
+    <script src="scripts/loading.js"></script>
+    <script src="scripts/ai-subscription.js"></script>
+    <script src="scripts/minko-ai.js"></script>
+    <script src="scripts/apply-navigation.js"></script>
+</body>
+</html>
