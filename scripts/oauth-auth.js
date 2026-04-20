@@ -1,187 +1,241 @@
 // OAuth авторизация (Google, Facebook, Discord)
+// Кнопки входа создаются динамически в navigation.js — обработчики через делегирование на document.
+
+/**
+ * URL редиректа после OAuth (должен совпадать с Redirect URLs в Supabase Dashboard).
+ * Берём «каталог» текущей страницы: /repo/page.html → https://host/repo/
+ */
+function reminkoOAuthRedirectUrl() {
+    const { origin, pathname } = window.location;
+    if (!pathname || pathname === '/') {
+        return origin + '/';
+    }
+    const idx = pathname.lastIndexOf('/');
+    const base = idx <= 0 ? '/' : pathname.slice(0, idx + 1);
+    return origin + base;
+}
+
+const REMINKO_OAUTH_PENDING_KEY = 'reminko_oauth_pending';
+
+function reminkoMarkOAuthRedirectPending() {
+    try {
+        sessionStorage.setItem(REMINKO_OAUTH_PENDING_KEY, '1');
+    } catch (_) {
+        /* ignore */
+    }
+}
+
+function reminkoConsumeOAuthRedirectPending() {
+    try {
+        const v = sessionStorage.getItem(REMINKO_OAUTH_PENDING_KEY);
+        if (v) {
+            sessionStorage.removeItem(REMINKO_OAUTH_PENDING_KEY);
+            return true;
+        }
+    } catch (_) {
+        /* ignore */
+    }
+    return false;
+}
 
 // Авторизация через Google
 async function signInWithGoogle() {
     if (!supabaseClient) {
-        showError('Supabase не инициализирован');
+        if (typeof showError === 'function') showError('Supabase не инициализирован');
         return;
     }
 
     try {
-        // Динамический URL для OAuth редиректа (работает на любом домене, включая GitHub Pages)
-        const redirectPath = window.location.pathname.replace(/\/[^/]*$/, '') || '';
-        const redirectUrl = window.location.origin + redirectPath;
-        
-        const { data, error } = await supabaseClient.auth.signInWithOAuth({
+        reminkoMarkOAuthRedirectPending();
+        const redirectTo = reminkoOAuthRedirectUrl();
+        const { error } = await supabaseClient.auth.signInWithOAuth({
             provider: 'google',
             options: {
-                redirectTo: redirectUrl
+                redirectTo
             }
         });
 
         if (error) {
             console.error('Ошибка Google авторизации:', error);
-            showError('Не удалось войти через Google');
+            if (typeof showError === 'function') {
+                showError(error.message || 'Не удалось войти через Google');
+            }
         }
     } catch (error) {
         console.error('Ошибка Google авторизации:', error);
-        showError('Ошибка авторизации');
+        if (typeof showError === 'function') showError('Ошибка авторизации');
     }
 }
 
 // Авторизация через Facebook
 async function signInWithFacebook() {
     if (!supabaseClient) {
-        showError('Supabase не инициализирован');
+        if (typeof showError === 'function') showError('Supabase не инициализирован');
         return;
     }
 
     try {
-        // Динамический URL для OAuth редиректа (работает на любом домене, включая GitHub Pages)
-        const redirectPath = window.location.pathname.replace(/\/[^/]*$/, '') || '';
-        const redirectUrl = window.location.origin + redirectPath;
-        
-        const { data, error } = await supabaseClient.auth.signInWithOAuth({
+        reminkoMarkOAuthRedirectPending();
+        const { error } = await supabaseClient.auth.signInWithOAuth({
             provider: 'facebook',
             options: {
-                redirectTo: redirectUrl
+                redirectTo: reminkoOAuthRedirectUrl()
             }
         });
 
         if (error) {
             console.error('Ошибка Facebook авторизации:', error);
-            showError('Не удалось войти через Facebook');
+            if (typeof showError === 'function') showError('Не удалось войти через Facebook');
         }
     } catch (error) {
         console.error('Ошибка Facebook авторизации:', error);
-        showError('Ошибка авторизации');
+        if (typeof showError === 'function') showError('Ошибка авторизации');
     }
 }
 
 // Авторизация через Discord
 async function signInWithDiscord() {
     if (!supabaseClient) {
-        showError('Supabase не инициализирован');
+        if (typeof showError === 'function') showError('Supabase не инициализирован');
         return;
     }
 
     try {
-        // Динамический URL для OAuth редиректа (работает на любом домене, включая GitHub Pages)
-        const redirectPath = window.location.pathname.replace(/\/[^/]*$/, '') || '';
-        const redirectUrl = window.location.origin + redirectPath;
-        
-        const { data, error } = await supabaseClient.auth.signInWithOAuth({
+        reminkoMarkOAuthRedirectPending();
+        const { error } = await supabaseClient.auth.signInWithOAuth({
             provider: 'discord',
             options: {
-                redirectTo: redirectUrl
+                redirectTo: reminkoOAuthRedirectUrl()
             }
         });
 
         if (error) {
             console.error('Ошибка Discord авторизации:', error);
-            showError('Не удалось войти через Discord');
+            if (typeof showError === 'function') showError('Не удалось войти через Discord');
         }
     } catch (error) {
         console.error('Ошибка Discord авторизации:', error);
-        showError('Ошибка авторизации');
+        if (typeof showError === 'function') showError('Ошибка авторизации');
     }
 }
 
-// Авторизация через Telegram обрабатывается в telegram-auth.js
-// Старая функция удалена
-
-// Обработка OAuth callback
+/** После OAuth: профиль в БД и закрытие модалки входа */
 async function handleOAuthCallback() {
     if (!supabaseClient) return;
 
     try {
-        const { data, error } = await supabaseClient.auth.getSession();
-        
+        const {
+            data: { session },
+            error
+        } = await supabaseClient.auth.getSession();
+
         if (error) {
             console.error('Ошибка получения сессии:', error);
             return;
         }
 
-        if (data.session) {
-            // Пользователь успешно авторизован
-            const user = data.session.user;
-            
-            // Проверяем существует ли профиль
+        if (!session || !session.user) {
+            try {
+                sessionStorage.removeItem(REMINKO_OAUTH_PENDING_KEY);
+            } catch (_) {
+                /* ignore */
+            }
+            return;
+        }
+
+        const showOAuthToast = reminkoConsumeOAuthRedirectPending();
+
+        const user = session.user;
+        const meta = user.user_metadata || {};
+        const email = user.email || '';
+        const avatarUrl =
+            meta.avatar_url ||
+            meta.picture ||
+            meta.picture_url ||
+            '';
+        const displayName =
+            meta.full_name ||
+            meta.name ||
+            meta.user_name ||
+            (email ? email.split('@')[0] : '') ||
+            `user_${user.id.slice(0, 8)}`;
+
+        try {
             const { data: profile } = await supabaseClient
                 .from('profiles')
-                .select('*')
+                .select('id, username, avatar')
                 .eq('id', user.id)
-                .single();
+                .maybeSingle();
 
-            // Если профиля нет - создаем
+            const username = profile?.username || displayName;
+            const avatar = profile?.avatar || avatarUrl || 'Fons/1 b.jpg';
+
             if (!profile) {
-                const email = user.email || '';
-                const username = user.user_metadata?.full_name || 
-                               email.split('@')[0] || 
-                               `user_${user.id.slice(0, 8)}`;
-                
+                const { error: upsertErr } = await supabaseClient.from('profiles').upsert(
+                    {
+                        id: user.id,
+                        username,
+                        avatar: avatar || 'Fons/1 b.jpg',
+                        gender: 'male'
+                    },
+                    { onConflict: 'id' }
+                );
+                if (upsertErr) {
+                    console.warn('[OAuth] Профиль:', upsertErr);
+                }
+            } else if (avatarUrl && (!profile.avatar || profile.avatar === '')) {
                 await supabaseClient
                     .from('profiles')
-                    .insert({
-                        id: user.id,
-                        username: username,
-                        avatar: user.user_metadata?.avatar_url || ''
-                    });
+                    .update({ avatar: avatarUrl })
+                    .eq('id', user.id);
             }
+        } catch (profileErr) {
+            console.warn('[OAuth] Ошибка профиля:', profileErr);
+        }
 
-            // Обновляем состояние авторизации
-            if (typeof updateAuthState === 'function') {
-                updateAuthState();
-            }
+        if (typeof window.reminkoSyncAuthStorage === 'function') {
+            window.reminkoSyncAuthStorage(session);
+        }
 
-            // Редирект на главную или закрытие модалки
-            const loginModal = document.getElementById('loginModal');
-            if (loginModal) {
-                loginModal.style.display = 'none';
-            }
+        const loginModal = document.getElementById('loginModal');
+        if (loginModal) {
+            loginModal.classList.remove('active');
+        }
+
+        if (showOAuthToast && typeof showSuccess === 'function') {
+            showSuccess('Вход выполнен');
         }
     } catch (error) {
         console.error('Ошибка обработки OAuth callback:', error);
     }
 }
 
-// Инициализация OAuth обработчиков
 function initOAuthHandlers() {
-    // Обработчик для Google кнопки
-    const googleLoginBtn = document.getElementById('googleLogin');
-    if (googleLoginBtn) {
-        googleLoginBtn.addEventListener('click', signInWithGoogle);
-    }
+    document.addEventListener('click', (e) => {
+        if (e.target.closest('#googleLogin')) {
+            e.preventDefault();
+            void signInWithGoogle();
+            return;
+        }
+        if (e.target.closest('#facebookLogin')) {
+            e.preventDefault();
+            void signInWithFacebook();
+            return;
+        }
+        if (e.target.closest('#discordLogin')) {
+            e.preventDefault();
+            void signInWithDiscord();
+            return;
+        }
+    });
 
-    // Обработчик для Facebook кнопки
-    const facebookLoginBtn = document.getElementById('facebookLogin');
-    if (facebookLoginBtn) {
-        facebookLoginBtn.addEventListener('click', signInWithFacebook);
-    }
-
-    // Обработчик для Discord кнопки
-    const discordLoginBtn = document.getElementById('discordLogin');
-    if (discordLoginBtn) {
-        discordLoginBtn.addEventListener('click', signInWithDiscord);
-    }
-
-    // Обработка callback при загрузке страницы
-    window.addEventListener('load', handleOAuthCallback);
-    
-    // Слушаем изменения авторизации
-    if (supabaseClient) {
-        supabaseClient.auth.onAuthStateChange((event, session) => {
-            if (event === 'SIGNED_IN' && session) {
-                handleOAuthCallback();
-            }
-        });
-    }
+    window.addEventListener('load', () => {
+        void handleOAuthCallback();
+    });
 }
 
-// Инициализация при загрузке DOM
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initOAuthHandlers);
 } else {
     initOAuthHandlers();
 }
-
