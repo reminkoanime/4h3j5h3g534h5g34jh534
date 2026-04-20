@@ -1,0 +1,421 @@
+﻿-- ============================================
+-- ╨С╨Р╨Ч╨Р ╨Ф╨Р╨Э╨Э╨л╨е RE-MINKO
+-- ╨Т╤Л╨┐╨╛╨╗╨╜╨╕╤В╨╡ ╨▓ Supabase SQL Editor
+-- ╨б╨║╤А╨╕╨┐╤В ╨╕╨┤╨╡╨╝╨┐╨╛╤В╨╡╨╜╤В╨╜╤Л╨╣: ╨╝╨╛╨╢╨╜╨╛ ╨╖╨░╨┐╤Г╤Б╨║╨░╤В╤М ╨┐╨╛╨▓╤В╨╛╤А╨╜╨╛
+-- ╨в╨░╨▒╨╗╨╕╤Ж╤Л ╤Б╨╛╨╖╨┤╨░╤О╤В╤Б╤П/╨╛╨▒╨╜╨╛╨▓╨╗╤П╤О╤В╤Б╤П, ╨╗╨╕╤И╨╜╨╕╨╡ ╤Г╨┤╨░╨╗╤П╤О╤В╤Б╤П
+--
+-- ╨Т╨Р╨Ц╨Э╨Ю (╨┐╤А╨╕╨▓╨░╤В╨╜╨╛╤Б╤В╤М):
+--   тАв watch_history: SELECT ╤А╨░╨╖╤А╨╡╤И╤С╨╜ ╨▓╤Б╨╡╨╝ (USING true) тАФ ╤В╨░╨║ ╤Д╤А╨╛╨╜╤В ╤З╨╕╤В╨░╨╡╤В ╨╕╤Б╤В╨╛╤А╨╕╤О
+--     ╤З╤Г╨╢╨╛╨│╨╛ ╨┐╤А╨╛╤Д╨╕╨╗╤П. ╨Х╤Б╨╗╨╕ ╨╜╤Г╨╢╨╜╨░ ╤В╨╛╨╗╤М╨║╨╛ ┬л╤Б╨▓╨╛╤П┬╗ ╨╕╤Б╤В╨╛╤А╨╕╤П тАФ ╤Б╨╝╨╡╨╜╨╕╤В╨╡ ╨┐╨╛╨╗╨╕╤В╨╕╨║╤Г ╨╕ ╤Г╨▒╨╡╤А╨╕╤В╨╡
+--     ╨▓╤Л╨▒╨╛╤А╨║╤Г ╤З╤Г╨╢╨╕╤Е ╤Б╤В╤А╨╛╨║ ╨▓ profile.js.
+--   тАв notifications: INSERT ╤Б auth.uid() IS NOT NULL тАФ ╨╗╤О╨▒╨╛╨╣ ╨╖╨░╨╗╨╛╨│╨╕╨╜╨╡╨╜╨╜╤Л╨╣ ╨╝╨╛╨╢╨╡╤В
+--     ╨▓╤Б╤В╨░╨▓╨╕╤В╤М ╤Б╤В╤А╨╛╨║╤Г ╤Б ╨╗╤О╨▒╤Л╨╝ user_id (╨╖╨░╤П╨▓╨║╨╕ ╨▓ ╨┤╤А╤Г╨╖╤М╤П ╨╕ ╤В.╨┤.). ╨б╨┐╨░╨╝ ╤Б╨╜╨╕╨╢╨░╨╣╤В╨╡ ╨▓ ╨║╨╛╨┤╨╡.
+--
+-- ╨Ю╨Я╨Р╨б╨Э╨Ю: ╨▒╨╗╨╛╨║ ┬л╨г╨Ф╨Р╨Ы╨Х╨Э╨Ш╨Х ╨в╨Р╨С╨Ы╨Ш╨ж┬╗ ╨╜╨╕╨╢╨╡ ╤Г╨┤╨░╨╗╤П╨╡╤В ╨Ы╨о╨С╨л╨Х public-╤В╨░╨▒╨╗╨╕╤Ж╤Л ╨╜╨╡ ╨╕╨╖ ╤Б╨┐╨╕╤Б╨║╨░.
+-- ╨Х╤Б╨╗╨╕ ╨┤╨╛╨▒╨░╨▓╨╗╤П╨╗╨╕ ╤Б╨▓╨╛╨╕ ╤В╨░╨▒╨╗╨╕╤Ж╤Л тАФ ╨┤╨╛╨┐╨╕╤И╨╕╤В╨╡ ╨╕╤Е ╨▓ _allowed ╨╕╨╗╨╕ ╨╖╨░╨║╨╛╨╝╨╝╨╡╨╜╤В╨╕╤А╤Г╨╣╤В╨╡ ╨▒╨╗╨╛╨║.
+--
+-- ╨Э╨Ю╨Т╨л╨Щ ╨Я╨а╨Ю╨Х╨Ъ╨в SUPABASE: URL/╨║╨╗╤О╤З╨╕ ╨▓ ╤Н╤В╨╛╨╝ ╤Д╨░╨╣╨╗╨╡ ╨Э╨Х ╤Е╤А╨░╨╜╤П╤В╤Б╤П. ╨Я╨╛╤Б╨╗╨╡ ╤Б╨╛╨╖╨┤╨░╨╜╨╕╤П ╨┐╤А╨╛╨╡╨║╤В╨░:
+--   1) ╨Т╤Л╨┐╨╛╨╗╨╜╨╕╤В╨╡ ╨▓╨╡╤Б╤М ╤Б╨║╤А╨╕╨┐╤В ╨╖╨┤╨╡╤Б╤М (SQL Editor ╨╜╨╛╨▓╨╛╨│╨╛ ╨┐╤А╨╛╨╡╨║╤В╨░).
+--   2) ╨Я╤А╨╛╨┐╨╕╤И╨╕╤В╨╡ URL ╨╕ anon JWT ╨▓ scripts/config.js (╨╕╨╗╨╕ config.local.js) тАФ ╤Б╨╝. SUPABASE_CHECKLIST.md
+-- ============================================
+
+-- ============================================
+-- 1. ╨б╨Ю╨Ч╨Ф╨Р╨Э╨Ш╨Х ╨в╨Р╨С╨Ы╨Ш╨ж (IF NOT EXISTS)
+-- ============================================
+
+CREATE TABLE IF NOT EXISTS public.profiles (
+  id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
+  username TEXT NOT NULL,
+  avatar TEXT,
+  gender TEXT CHECK (gender IN ('male', 'female')) DEFAULT 'male',
+  telegram_id TEXT,
+  last_online TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS public.favorites_anime (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  anime_id TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+  UNIQUE(user_id, anime_id)
+);
+
+CREATE TABLE IF NOT EXISTS public.favorites_manga (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  manga_id TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+  UNIQUE(user_id, manga_id)
+);
+
+CREATE TABLE IF NOT EXISTS public.watch_history (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  anime_id TEXT NOT NULL,
+  episode_number INTEGER NOT NULL,
+  watched_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS public.user_settings (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE UNIQUE NOT NULL,
+  ads_enabled BOOLEAN DEFAULT true,
+  notifications_enabled BOOLEAN DEFAULT true,
+  auto_play_next_episode BOOLEAN DEFAULT false,
+  show_recommendations BOOLEAN DEFAULT true,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS public.minko_ai_state (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE UNIQUE NOT NULL,
+  is_angry BOOLEAN DEFAULT false,
+  angry_until TIMESTAMP WITH TIME ZONE,
+  blocked_forever BOOLEAN DEFAULT false,
+  unauth_attempts INTEGER DEFAULT 0,
+  trial_messages INTEGER DEFAULT 0,
+  wrong_gender_count INTEGER DEFAULT 0,
+  swear_count INTEGER DEFAULT 0,
+  forgiven_count INTEGER DEFAULT 0,
+  last_interaction TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS public.ai_subscriptions (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL UNIQUE,
+  subscription_type TEXT CHECK (subscription_type IN ('free', 'premium', 'unlimited')) DEFAULT 'free',
+  messages_limit INTEGER DEFAULT 50,
+  messages_used INTEGER DEFAULT 0,
+  last_reset_date TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  expires_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS public.vip_subscriptions (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL UNIQUE,
+  is_active BOOLEAN DEFAULT false,
+  expires_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS public.watch_together_sessions (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  host_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  anime_id TEXT,
+  manga_id TEXT,
+  type TEXT CHECK (type IN ('anime', 'manga')) NOT NULL,
+  current_episode INTEGER,
+  current_chapter INTEGER,
+  playback_position INTEGER DEFAULT 0,
+  is_playing BOOLEAN DEFAULT false,
+  playback_time FLOAT DEFAULT 0,
+  video_source TEXT,
+  is_active BOOLEAN DEFAULT true,
+  session_code TEXT UNIQUE NOT NULL,
+  max_participants INTEGER DEFAULT 4,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS public.watch_together_participants (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  session_id UUID REFERENCES watch_together_sessions(id) ON DELETE CASCADE NOT NULL,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  has_vip BOOLEAN DEFAULT false,
+  joined_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+  UNIQUE(session_id, user_id)
+);
+
+CREATE TABLE IF NOT EXISTS public.watch_together_chat (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  session_id UUID REFERENCES watch_together_sessions(id) ON DELETE CASCADE NOT NULL,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  message TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+);
+
+-- ╨б╨╕╨│╨╜aling WebRTC ╨┤╨╗╤П ╨│╨╛╨╗╨╛╤Б╨╛╨▓╨╛╨│╨╛ ╤З╨░╤В╨░ ┬л╨б╨╝╨╛╤В╤А╨╡╤В╤М ╨▓╨╝╨╡╤Б╤В╨╡┬╗ (mesh, ╤В╨╛╨╗╤М╨║╨╛ ╨┐╤А╨╕ ╨▓╤Б╨╡╤Е VIP ╨▓ ╨║╨╛╨╝╨╜╨░╤В╨╡ тАФ ╨┐╤А╨╛╨▓╨╡╤А╨║╨░ ╨▓ UI)
+CREATE TABLE IF NOT EXISTS public.watch_together_voice_signals (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  session_id UUID REFERENCES public.watch_together_sessions(id) ON DELETE CASCADE NOT NULL,
+  from_user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  to_user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  signal_type TEXT NOT NULL CHECK (signal_type IN ('offer', 'answer', 'candidate', 'hangup', 'mod_mute')),
+  payload JSONB NOT NULL DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS public.friends (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  friend_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  status TEXT CHECK (status IN ('pending', 'accepted', 'blocked')) DEFAULT 'pending',
+  accepted_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+  UNIQUE(user_id, friend_id)
+);
+
+CREATE TABLE IF NOT EXISTS public.global_chat_messages (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  message TEXT NOT NULL,
+  reply_to UUID REFERENCES public.global_chat_messages(id) ON DELETE SET NULL,
+  deleted_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS public.global_chat_likes (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  message_id UUID REFERENCES public.global_chat_messages(id) ON DELETE CASCADE NOT NULL,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+  UNIQUE(message_id, user_id)
+);
+
+CREATE TABLE IF NOT EXISTS public.notifications (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  title TEXT NOT NULL,
+  message TEXT NOT NULL,
+  type TEXT DEFAULT 'info',
+  link TEXT,
+  data JSONB,
+  read BOOLEAN DEFAULT false,
+  read_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS public.user_achievements (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  achievement_type TEXT NOT NULL,
+  earned_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+  UNIQUE(user_id, achievement_type)
+);
+
+CREATE TABLE IF NOT EXISTS public.custom_anime (
+  id SERIAL PRIMARY KEY,
+  title TEXT NOT NULL,
+  title_alt TEXT NOT NULL,
+  type TEXT DEFAULT '╨б╨╡╤А╨╕╨░╨╗',
+  year INTEGER DEFAULT EXTRACT(YEAR FROM CURRENT_DATE),
+  total_episodes INTEGER DEFAULT 12,
+  status TEXT DEFAULT '╨Ю╨╜╨│╨╛╨╕╨╜╨│',
+  genres TEXT[] DEFAULT '{}',
+  description TEXT,
+  studio TEXT,
+  rating DECIMAL(3,1) DEFAULT 0,
+  added_by UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+);
+
+-- ╨У╨╗╨╛╨▒╨░╨╗╤М╨╜╤Л╨╣ ╨║╨░╤В╨░╨╗╨╛╨│: ╤В╨░╨╣╤В╨╗╤Л ╤Б MyAnimeList (Jikan), ╨┤╨╛╨▒╨░╨▓╨╗╨╡╨╜╨╜╤Л╨╡ ╤Б╨╛╨╖╨┤╨░╤В╨╡╨╗╨╡╨╝; ╨╜╨░ ╤Б╨░╨╣╤В╨╡ id = 10_000_000 + mal_id
+CREATE TABLE IF NOT EXISTS public.catalog_site_anime (
+  mal_id INTEGER PRIMARY KEY,
+  jikan JSONB NOT NULL,
+  added_by UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+);
+
+ALTER TABLE public.catalog_site_anime ADD COLUMN IF NOT EXISTS title_ru TEXT;
+ALTER TABLE public.catalog_site_anime ADD COLUMN IF NOT EXISTS description_ru TEXT;
+
+-- ╨б╨╛╨▒╤Л╤В╨╕╤П ╨┐╨╛╤Б╨╡╤Й╨╡╨╜╨╕╨╣ (╨┤╨░╤И╨▒╨╛╤А╨┤ ╤Б╨╛╨╖╨┤╨░╤В╨╡╨╗╤П): ╨┐╤А╨╛╤Б╨╝╨╛╤В╤А╤Л ╤Б╤В╤А╨░╨╜╨╕╤Ж, ╨│╨╛╤Б╤В╨╕ ╨╕ ╨╖╨░╨╗╨╛╨│╨╕╨╜╨╡╨╜╨╜╤Л╨╡
+CREATE TABLE IF NOT EXISTS public.site_visit_events (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  visitor_id TEXT NOT NULL,
+  user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  path TEXT NOT NULL,
+  page_title TEXT,
+  referrer TEXT,
+  user_agent TEXT,
+  event_kind TEXT NOT NULL DEFAULT 'pageview',
+  event_label TEXT,
+  meta JSONB,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+  CONSTRAINT site_visit_visitor_len CHECK (char_length(visitor_id) >= 8 AND char_length(visitor_id) <= 64),
+  CONSTRAINT site_visit_path_len CHECK (char_length(path) <= 2048)
+);
+
+-- ============================================
+-- 2. ╨Ь╨Ш╨У╨а╨Р╨ж╨Ш╨п ╨б╨г╨й╨Х╨б╨в╨Т╨г╨о╨й╨Ш╨е ╨в╨Р╨С╨Ы╨Ш╨ж
+--    ╨Ф╨╛╨▒╨░╨▓╨╗╨╡╨╜╨╕╨╡ ╨║╨╛╨╗╨╛╨╜╨╛╨║ ╨║╨╛╤В╨╛╤А╤Л╤Е ╨╝╨╛╨╢╨╡╤В ╨╜╨╡ ╨▒╤Л╤В╤М
+--    ╨Ш╨╖╨╝╨╡╨╜╨╡╨╜╨╕╨╡ ╤В╨╕╨┐╨╛╨▓/╨┤╨╡╤Д╨╛╨╗╤В╨╛╨▓
+-- ============================================
+
+-- profiles: ╨┤╨╛╨▒╨░╨▓╨╕╤В╤М ╨║╨╛╨╗╨╛╨╜╨║╨╕ ╨╡╤Б╨╗╨╕ ╨╕╤Е ╨╜╨╡╤В
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS telegram_id TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS last_online TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW());
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS gender TEXT DEFAULT 'male';
+
+-- minko_ai_state: ╤Г╨▒╨╡╨┤╨╕╤В╤М╤Б╤П ╤З╤В╨╛ ╨▓╤Б╨╡ ╨┐╨╛╨╗╤П ╨╜╨░ ╨╝╨╡╤Б╤В╨╡
+ALTER TABLE public.minko_ai_state ADD COLUMN IF NOT EXISTS wrong_gender_count INTEGER DEFAULT 0;
+ALTER TABLE public.minko_ai_state ADD COLUMN IF NOT EXISTS swear_count INTEGER DEFAULT 0;
+ALTER TABLE public.minko_ai_state ADD COLUMN IF NOT EXISTS forgiven_count INTEGER DEFAULT 0;
+ALTER TABLE public.minko_ai_state ADD COLUMN IF NOT EXISTS trial_messages INTEGER DEFAULT 0;
+
+-- ai_subscriptions: ╨╝╨╕╨│╤А╨░╤Ж╨╕╤П ╤Б 10 ╨╜╨░ 50 ╨╗╨╕╨╝╨╕╤В ╨╕ DATE тЖТ TIMESTAMP
+ALTER TABLE public.ai_subscriptions ADD COLUMN IF NOT EXISTS expires_at TIMESTAMP WITH TIME ZONE;
+ALTER TABLE public.ai_subscriptions ALTER COLUMN messages_limit SET DEFAULT 50;
+
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_schema = 'public' AND table_name = 'ai_subscriptions' AND column_name = 'last_reset_date' AND data_type = 'date'
+  ) THEN
+    ALTER TABLE public.ai_subscriptions ALTER COLUMN last_reset_date TYPE TIMESTAMP WITH TIME ZONE USING last_reset_date::TIMESTAMP WITH TIME ZONE;
+    ALTER TABLE public.ai_subscriptions ALTER COLUMN last_reset_date SET DEFAULT NOW();
+  END IF;
+END $$;
+
+-- ╨Ю╨▒╨╜╨╛╨▓╨╕╤В╤М ╤Б╤В╨░╤А╤Л╨╡ ╨╖╨░╨┐╨╕╤Б╨╕ ╤Б ╨╗╨╕╨╝╨╕╤В╨╛╨╝ 10 ╨╜╨░ 50 (╨▒╨╡╤Б╨┐╨╗╨░╤В╨╜╤Л╨╡ ╨┐╨╛╨╗╤М╨╖╨╛╨▓╨░╤В╨╡╨╗╨╕)
+UPDATE public.ai_subscriptions
+SET messages_limit = 50
+WHERE subscription_type = 'free' AND messages_limit < 50;
+
+-- watch_together_sessions: ╨▓╤Б╨╡ ╨║╨╛╨╗╨╛╨╜╨║╨╕
+ALTER TABLE public.watch_together_sessions ADD COLUMN IF NOT EXISTS manga_id TEXT;
+ALTER TABLE public.watch_together_sessions ADD COLUMN IF NOT EXISTS current_chapter INTEGER;
+ALTER TABLE public.watch_together_sessions ADD COLUMN IF NOT EXISTS playback_time FLOAT DEFAULT 0;
+ALTER TABLE public.watch_together_sessions ADD COLUMN IF NOT EXISTS video_source TEXT;
+ALTER TABLE public.watch_together_sessions ADD COLUMN IF NOT EXISTS max_participants INTEGER DEFAULT 4;
+
+-- watch_together_participants: has_vip
+ALTER TABLE public.watch_together_participants ADD COLUMN IF NOT EXISTS has_vip BOOLEAN DEFAULT false;
+-- ┬л╨б╨╝╨╛╤В╤А╨╡╤В╤М ╨▓╨╝╨╡╤Б╤В╨╡┬╗: ╨│╨╗╨╛╨▒╨░╨╗╤М╨╜╨░╤П ╨┐╨░╤Г╨╖╨░ + ╨┐╨╛╨║╨╛╨╗╨╡╨╜╨╕╨╡ ╤Б╨╕╨╜╤Е╤А╨╛╨╜╨╕╨╖╨░╤Ж╨╕╨╕ + ╨┐╨╕╨╜╨│╨╕
+ALTER TABLE public.watch_together_sessions ADD COLUMN IF NOT EXISTS sync_hold BOOLEAN DEFAULT false;
+ALTER TABLE public.watch_together_sessions ADD COLUMN IF NOT EXISTS sync_hold_reason TEXT;
+ALTER TABLE public.watch_together_sessions ADD COLUMN IF NOT EXISTS sync_generation INTEGER DEFAULT 0;
+ALTER TABLE public.watch_together_sessions ADD COLUMN IF NOT EXISTS host_screen_broadcast BOOLEAN DEFAULT false;
+ALTER TABLE public.watch_together_participants ADD COLUMN IF NOT EXISTS last_ping_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW());
+
+UPDATE public.watch_together_participants
+SET last_ping_at = COALESCE(last_ping_at, TIMEZONE('utc'::text, NOW()))
+WHERE last_ping_at IS NULL;
+
+-- profiles: ╤В╨╡╨║╤Г╤Й╨░╤П ╨░╨║╤В╨╕╨▓╨╜╨╛╤Б╤В╤М (╤З╤В╨╛ ╤Б╨╝╨╛╤В╤А╨╕╤В)
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS current_activity JSONB;
+
+-- ============================================
+-- ╨Ы╨Ш╨з╨Э╨л╨Х ╨б╨Ю╨Ю╨С╨й╨Х╨Э╨Ш╨п
+-- ============================================
+CREATE TABLE IF NOT EXISTS public.direct_messages (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  sender_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  receiver_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  message TEXT NOT NULL,
+  read BOOLEAN DEFAULT false,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_dm_sender ON public.direct_messages(sender_id);
+CREATE INDEX IF NOT EXISTS idx_dm_receiver ON public.direct_messages(receiver_id);
+CREATE INDEX IF NOT EXISTS idx_dm_created ON public.direct_messages(created_at);
+
+ALTER TABLE public.direct_messages ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "dm_select" ON public.direct_messages;
+DROP POLICY IF EXISTS "dm_insert" ON public.direct_messages;
+DROP POLICY IF EXISTS "dm_update" ON public.direct_messages;
+CREATE POLICY "dm_select" ON public.direct_messages FOR SELECT USING (
+  auth.uid() = sender_id OR auth.uid() = receiver_id
+);
+CREATE POLICY "dm_insert" ON public.direct_messages FOR INSERT WITH CHECK (auth.uid() = sender_id);
+CREATE POLICY "dm_update" ON public.direct_messages FOR UPDATE USING (auth.uid() = receiver_id);
+
+-- ============================================
+-- ╨Р╨Ф╨Ь╨Ш╨Э╨л ╨Ш ╨Ь╨Ю╨Ф╨Х╨а╨Р╨ж╨Ш╨п ╨з╨Р╨в╨Р (╨╕╤Б╨┐╨╛╨╗╤М╨╖╤Г╤О╤В╤Б╤П admin-panel.js, admin-panel-creator.js)
+-- ============================================
+
+CREATE TABLE IF NOT EXISTS public.admins (
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
+  role TEXT NOT NULL DEFAULT 'admin',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS public.chat_mutes (
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
+  muted_until TIMESTAMP WITH TIME ZONE NOT NULL,
+  reason TEXT,
+  created_by UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_chat_mutes_muted_until ON public.chat_mutes(muted_until);
+
+ALTER TABLE public.admins ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.chat_mutes ENABLE ROW LEVEL SECURITY;
+
+-- ╨Я╨╛╨╗╨╕╤В╨╕╨║╨╕ admins / chat_mutes ╨╕ site_visit_events ╨╜╨╕╨╢╨╡ ╨╖╨░╨▓╨╕╤Б╤П╤В ╨╛╤В is_site_creator_user_id тАФ ╤Б╨╝. ╨▒╨╗╨╛╨║ ╨┐╨╡╤А╨╡╨┤ ╨╜╨╕╨╝╨╕.
+
+-- global_chat_messages: reply_to ╨╕ deleted_at
+ALTER TABLE public.global_chat_messages ADD COLUMN IF NOT EXISTS reply_to UUID REFERENCES public.global_chat_messages(id) ON DELETE SET NULL;
+ALTER TABLE public.global_chat_messages ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMP WITH TIME ZONE;
+
+-- notifications: ╨┤╨╛╨┐╨╛╨╗╨╜╨╕╤В╨╡╨╗╤М╨╜╤Л╨╡ ╨┐╨╛╨╗╤П
+ALTER TABLE public.notifications ADD COLUMN IF NOT EXISTS link TEXT;
+ALTER TABLE public.notifications ADD COLUMN IF NOT EXISTS data JSONB;
+ALTER TABLE public.notifications ADD COLUMN IF NOT EXISTS read_at TIMESTAMP WITH TIME ZONE;
+
+-- vip_subscriptions
+ALTER TABLE public.vip_subscriptions ADD COLUMN IF NOT EXISTS expires_at TIMESTAMP WITH TIME ZONE;
+
+-- friends
+ALTER TABLE public.friends ADD COLUMN IF NOT EXISTS accepted_at TIMESTAMP WITH TIME ZONE;
+
+-- profiles: ╨╝╨╛╨┤╨╡╤А╨░╤Ж╨╕╤П ╨╕ ╨░╨┤╨╝╨╕╨╜-╨┐╨░╨╜╨╡╨╗╤М (╤А╨░╨╜╤М╤И╨╡ role ╨┤╤А╨╛╨┐╨░╨╗╨╕ тАФ ╨▓╨╛╨╖╨▓╤А╨░╤Й╨░╨╡╨╝ ╨╛╨┐╤Ж╨╕╨╛╨╜╨░╨╗╤М╨╜╤Л╨╡ ╨┐╨╛╨╗╤П)
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS role TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS is_banned BOOLEAN DEFAULT false;
+
+-- user_settings: ╨┤╨╛╨┐╨╛╨╗╨╜╨╕╤В╨╡╨╗╤М╨╜╤Л╨╡ ╨┐╨╛╨╗╤П
+ALTER TABLE public.user_settings ADD COLUMN IF NOT EXISTS auto_play_next_episode BOOLEAN DEFAULT false;
+ALTER TABLE public.user_settings ADD COLUMN IF NOT EXISTS show_recommendations BOOLEAN DEFAULT true;
+
+-- ============================================
+-- 3. ╨г╨Ф╨Р╨Ы╨Х╨Э╨Ш╨Х ╨в╨Р╨С╨Ы╨Ш╨ж ╨Ъ╨Ю╨в╨Ю╨а╨л╨е ╨Э╨Х╨в ╨Т ╨б╨е╨Х╨Ь╨Х
+-- ============================================
+
+DO $$
+DECLARE
+  _tbl TEXT;
+  _allowed TEXT[] := ARRAY[
+    'profiles',
+    'favorites_anime',
+    'favorites_manga',
+    'watch_history',
+    'user_settings',
+    'minko_ai_state',
+    'ai_subscriptions',
+    'vip_subscriptions',
+    'watch_together_sessions',
+    'watch_together_participants',
+    'watch_together_chat',
+    'watch_together_voice_signals',
+    'friends',
+    'global_chat_messages',
+    'global_chat_likes',
+    'notifications',
+    'user_achievements',
+    'custom_anime',
+    'catalog_site_anime',
+    'site_visit_events',
+    'direct_messages',
+    'admins',
+    'chat_mutes',
+    'site_maintenance_config'
+  ];
+BEGIN
+  FOR _tbl IN
+    SELECT tablename FROM pg_tables
+    WHERE schemaname = 'public' AND tablename != ALL(_allowed)
+  LOOP
+    RAISE NOTICE '╨г╨┤╨░╨╗╨╡╨╜╨╕╨╡ ╨╗╨╕╤И╨╜╨╡╨╣ ╤В╨░╨▒╨╗╨╕╤Ж╤Л: public.%', _tbl;
+    EXECUTE format('DROP TABLE IF EXISTS public.%I CASCADE', _tbl);
+  END LOOP;
+END $$;

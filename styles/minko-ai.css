@@ -1,0 +1,792 @@
+/* Minko AI — макет: Nunito, #0d0d14, акцент #e300ff (логика в scripts/minko-ai.js без изменений) */
+
+.minko-ai-page {
+    font-family: 'Nunito', system-ui, sans-serif;
+}
+
+.minko-ai-page .main-content-wrapper {
+    background: #0d0d14;
+    min-height: 100vh;
+}
+
+.minko-ai-main {
+    padding: 1rem;
+}
+
+.minko-ai-wrap {
+    position: relative;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 120px);
+    min-height: 520px;
+    background: rgba(227, 0, 255, 0.04);
+    border: 1px solid rgba(227, 0, 255, 0.15);
+    border-radius: 12px;
+    box-shadow: 0 4px 32px rgba(0, 0, 0, 0.45);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+}
+
+.minko-ai-wrap:hover {
+    border-color: rgba(227, 0, 255, 0.38);
+    box-shadow: 0 0 28px rgba(227, 0, 255, 0.1);
+}
+
+/* Шапка */
+.minko-ai-head {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 16px 18px;
+    background: rgba(227, 0, 255, 0.08);
+    border-bottom: 1px solid rgba(227, 0, 255, 0.15);
+    flex-shrink: 0;
+}
+
+.minko-ai-head-avatar {
+    position: relative;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: 0 0 16px rgba(227, 0, 255, 0.35);
+    border: 1px solid rgba(227, 0, 255, 0.25);
+}
+
+.minko-ai-head-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.minko-ai-head-dot {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid #13121d;
+    transition: background 0.3s, box-shadow 0.3s;
+}
+
+.minko-ai-head-dot.online {
+    background: #22c55e;
+    box-shadow: 0 0 8px rgba(34, 197, 94, 0.65);
+}
+
+.minko-ai-head-dot.offline {
+    background: #6b7280;
+    box-shadow: none;
+}
+
+.minko-ai-head-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.minko-ai-head-title {
+    font-size: 22px;
+    font-weight: 900;
+    color: #e300ff;
+    margin: 0 0 6px;
+    letter-spacing: -0.02em;
+    background: none;
+    -webkit-background-clip: unset;
+    -webkit-text-fill-color: #e300ff;
+    background-clip: unset;
+}
+
+.minko-ai-head-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 12px;
+    color: rgba(232, 224, 236, 0.6);
+}
+
+.minko-ai-head-status {
+    font-size: 12px;
+    color: rgba(232, 224, 236, 0.65);
+    margin: 0;
+}
+
+.minko-header-vip-live {
+    display: none;
+    background: rgba(227, 0, 255, 0.3);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 800;
+    color: #e8e0ec;
+}
+
+html[data-minko-ai-vip='1'] .minko-header-vip-live {
+    display: inline-block;
+}
+
+.minko-clear-chat-btn {
+    background: rgba(227, 0, 255, 0.1);
+    border: 1.5px solid rgba(227, 0, 255, 0.35);
+    border-radius: 8px;
+    padding: 4px 10px;
+    width: auto;
+    height: auto;
+    min-height: 0;
+    font-size: 11px;
+    font-weight: 700;
+    color: #e300ff;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, border-color 0.2s, transform 0.2s;
+    flex-shrink: 0;
+    text-decoration: none;
+    font-family: inherit;
+}
+
+.minko-clear-chat-btn:hover {
+    background: rgba(227, 0, 255, 0.18);
+    border-color: rgba(227, 0, 255, 0.55);
+    transform: none;
+}
+
+/* Сообщения */
+.minko-ai-chat,
+.minko-ai-chat.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.minko-ai-chat::-webkit-scrollbar {
+    width: 6px;
+}
+
+.minko-ai-chat::-webkit-scrollbar-track {
+    background: rgba(227, 0, 255, 0.05);
+}
+
+.minko-ai-chat::-webkit-scrollbar-thumb {
+    background: rgba(227, 0, 255, 0.3);
+    border-radius: 3px;
+}
+
+.message,
+.minko-msg {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+    padding: 6px 8px;
+    margin: 0 -4px;
+    border-radius: 8px;
+    animation: minkoMsgIn 0.35s ease-out;
+    transition: background 0.2s;
+}
+
+.message:hover,
+.minko-msg:hover {
+    background: rgba(227, 0, 255, 0.06);
+}
+
+@keyframes minkoMsgIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.message-user {
+    flex-direction: row-reverse;
+}
+
+.message-avatar,
+.minko-msg-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: rgba(227, 0, 255, 0.12);
+    border: 1px solid rgba(227, 0, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 16px;
+}
+
+.message-avatar img,
+.minko-msg-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.message-assistant .message-avatar {
+    background: rgba(227, 0, 255, 0.15);
+    border-color: rgba(227, 0, 255, 0.35);
+}
+
+.message-content,
+.minko-msg-body {
+    flex: 0 1 auto;
+    min-width: 0;
+    max-width: min(90%, 17.5rem);
+}
+
+.message-user .message-content {
+    display: flex;
+    justify-content: flex-end;
+    max-width: min(86%, 15rem);
+}
+
+.message-bubble,
+.minko-msg-bubble {
+    width: fit-content;
+    max-width: min(100%, 17rem);
+    padding: 8px 12px;
+    border-radius: 12px;
+    line-height: 1.45;
+    font-size: clamp(12px, 2.8vw, 13px);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    white-space: pre-wrap;
+    hyphens: auto;
+}
+
+.message-assistant .message-bubble {
+    background: rgba(227, 0, 255, 0.1);
+    border: 1px solid rgba(227, 0, 255, 0.12);
+    border-bottom-left-radius: 6px;
+    color: #e8e0ec;
+    box-shadow: none;
+}
+
+.message-user .message-bubble {
+    background: rgba(227, 0, 255, 0.15);
+    border: 1px solid rgba(227, 0, 255, 0.22);
+    border-bottom-right-radius: 6px;
+    color: #e8e0ec;
+    box-shadow: 0 0 16px rgba(227, 0, 255, 0.12);
+}
+
+.message-bubble p {
+    margin: 0.28rem 0;
+}
+
+.message-bubble p:first-child {
+    margin-top: 0;
+}
+
+.message-bubble p:last-child {
+    margin-bottom: 0;
+}
+
+.message-bubble ul {
+    margin: 0.5rem 0;
+    padding-left: 1.25rem;
+    list-style-type: disc;
+}
+
+.message-bubble li {
+    margin: 0.2rem 0;
+}
+
+.message-bubble strong {
+    color: #f0abfc;
+    font-weight: 700;
+}
+
+.message-user .message-bubble strong {
+    color: #fff;
+}
+
+/* Предупреждение антифлуда (элемент в разметке; показ — по желанию, без изменений JS) */
+.minko-throttle-warn {
+    margin: 8px 16px 0;
+    background: rgba(255, 59, 48, 0.15);
+    border: 1px solid rgba(255, 59, 48, 0.3);
+    color: #ff6b5b;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    text-align: center;
+}
+
+/* Подвал */
+.minko-ai-foot {
+    padding: 16px;
+    border-top: 1px solid rgba(227, 0, 255, 0.12);
+    background: transparent;
+    border-radius: 0;
+    flex-shrink: 0;
+}
+
+.minko-ai-form {
+    width: 100%;
+}
+
+.minko-ai-input-wrap,
+.chat-input-inner {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(227, 0, 255, 0.06);
+    border: 1.5px solid rgba(227, 0, 255, 0.15);
+    border-radius: 8px;
+    padding: 8px 10px;
+    min-height: 52px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.minko-ai-input-wrap:focus-within,
+.chat-input-inner:focus-within {
+    border-color: rgba(227, 0, 255, 0.45);
+    box-shadow: 0 0 0 2px rgba(227, 0, 255, 0.12);
+}
+
+.minko-ai-input-zone,
+.chat-input-area {
+    flex: 1 1 0%;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    cursor: text;
+}
+
+.minko-ai-input,
+.chat-input {
+    width: 100%;
+    min-height: 28px;
+    max-height: 150px;
+    padding: 4px 0;
+    background: transparent;
+    border: none;
+    color: #e8e0ec;
+    font-size: 13px;
+    font-family: inherit;
+    resize: none;
+    outline: none;
+    line-height: 1.45;
+    box-sizing: border-box;
+    cursor: text;
+}
+
+.minko-ai-input::placeholder,
+.chat-input::placeholder {
+    color: rgba(232, 224, 236, 0.35);
+}
+
+.minko-ai-input:disabled,
+.chat-input:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.minko-ai-send,
+.send-button {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    min-height: 42px;
+    border-radius: 50%;
+    background: #e300ff;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
+    box-shadow: 0 0 14px rgba(227, 0, 255, 0.4);
+    box-sizing: border-box;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.minko-ai-send.minko-ai-send--labeled {
+    width: auto;
+    min-width: 52px;
+    height: auto;
+    min-height: 44px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    gap: 6px;
+    font-family: inherit;
+}
+
+.minko-ai-page .minko-ai-send svg,
+.minko-ai-page .send-button svg {
+    flex-shrink: 0;
+}
+
+.minko-send-label {
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.minko-ai-send:hover:not(:disabled),
+.send-button:hover:not(:disabled) {
+    background: #c800e0;
+    transform: scale(1.02);
+    box-shadow: 0 0 18px rgba(227, 0, 255, 0.55);
+}
+
+.minko-ai-send:disabled,
+.send-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.minko-ai-hint-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2px;
+    gap: 8px;
+}
+
+.minko-ai-hint,
+.chat-input-hint {
+    font-size: 11px;
+    color: rgba(232, 224, 236, 0.4);
+    margin: 6px 0 0 0;
+}
+
+.minko-ai-msg-counter {
+    font-size: 11px;
+    color: rgba(232, 224, 236, 0.45);
+    margin-top: 6px;
+    font-weight: 600;
+}
+
+.msg-counter-vip {
+    background: linear-gradient(90deg, #e300ff, #c084fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 800;
+    font-size: 12px;
+}
+
+.msg-counter-sleepy {
+    color: rgba(227, 0, 255, 0.55);
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.minko-ai-status,
+.chat-status {
+    margin-top: 8px;
+    text-align: center;
+    font-size: 11px;
+    color: rgba(227, 0, 255, 0.5);
+    min-height: 16px;
+    transition: opacity 0.35s;
+}
+
+/* Сонные эффекты */
+.sleepy-mode .minko-ai-head-img {
+    animation: sleepyBob 4s ease-in-out infinite;
+}
+
+@keyframes sleepyBob {
+    0%,
+    100% {
+        transform: rotate(0deg);
+    }
+    25% {
+        transform: rotate(-4deg) translateY(1px);
+    }
+    75% {
+        transform: rotate(3deg) translateY(2px);
+    }
+}
+
+.sleepy-mode .minko-ai-head-dot.online {
+    background: #f59e0b;
+    box-shadow: 0 0 8px rgba(245, 158, 11, 0.55);
+    animation: sleepyDotPulse 3s ease-in-out infinite;
+}
+
+@keyframes sleepyDotPulse {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.45;
+    }
+}
+
+.sleepy-zzz {
+    position: absolute;
+    top: -6px;
+    right: -8px;
+    font-size: 14px;
+    animation: floatZzz 2.5s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 5;
+}
+
+@keyframes floatZzz {
+    0% {
+        opacity: 0;
+        transform: translate(0, 0) scale(0.7);
+    }
+    30% {
+        opacity: 1;
+        transform: translate(-3px, -8px) scale(1);
+    }
+    70% {
+        opacity: 0.7;
+        transform: translate(2px, -16px) scale(0.9);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-1px, -24px) scale(0.6);
+    }
+}
+
+.sleepy-mode .message-assistant .message-bubble {
+    animation: minkoMsgIn 0.35s ease-out, sleepyFadeIn 0.8s ease-out;
+}
+
+@keyframes sleepyFadeIn {
+    0% {
+        opacity: 0.35;
+        filter: blur(2px);
+    }
+    60% {
+        opacity: 0.75;
+        filter: blur(0.5px);
+    }
+    100% {
+        opacity: 1;
+        filter: blur(0);
+    }
+}
+
+.sleepy-typing-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    font-size: 0.82rem;
+    color: rgba(232, 224, 236, 0.55);
+}
+
+.sleepy-typing-dots span {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(227, 0, 255, 0.55);
+    animation: sleepyDots 1.4s ease-in-out infinite;
+}
+
+.sleepy-typing-dots span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+.sleepy-typing-dots span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes sleepyDots {
+    0%,
+    60%,
+    100% {
+        opacity: 0.35;
+        transform: translateY(0);
+    }
+    30% {
+        opacity: 1;
+        transform: translateY(-6px);
+    }
+}
+
+/* Оверлей «уснула» */
+.sleepy-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.88);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    z-index: 20;
+    border-radius: 12px;
+    animation: sleepyOverlayIn 0.5s ease-out;
+    backdrop-filter: blur(4px);
+}
+
+@keyframes sleepyOverlayIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.sleepy-overlay-icon {
+    font-size: 3.25rem;
+    animation: sleepyBob 3s ease-in-out infinite;
+}
+
+.sleepy-overlay-text {
+    color: rgba(232, 224, 236, 0.75);
+    font-size: 0.95rem;
+    text-align: center;
+    line-height: 1.5;
+    max-width: 90%;
+}
+
+.sleepy-overlay-text strong {
+    color: #f0abfc;
+}
+
+.sleepy-wake-btn {
+    padding: 10px 22px;
+    background: #e300ff;
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    box-shadow: 0 0 20px rgba(227, 0, 255, 0.45);
+    transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+    animation: wakeBtnPulse 2s ease-in-out infinite;
+}
+
+.sleepy-wake-btn:hover {
+    background: #c800e0;
+    transform: scale(1.03);
+    box-shadow: 0 0 26px rgba(227, 0, 255, 0.6);
+}
+
+@keyframes wakeBtnPulse {
+    0%,
+    100% {
+        box-shadow: 0 0 18px rgba(227, 0, 255, 0.45);
+    }
+    50% {
+        box-shadow: 0 0 28px rgba(227, 0, 255, 0.65);
+    }
+}
+
+.sleepy-overlay-dots {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+    margin-top: 8px;
+}
+
+.dot-bounce {
+    font-size: 1.75rem;
+    color: #e300ff;
+    animation: dotBounce 1.2s ease-in-out infinite;
+}
+
+@keyframes dotBounce {
+    0%,
+    100% {
+        transform: translateY(0);
+        opacity: 0.45;
+    }
+    50% {
+        transform: translateY(-8px);
+        opacity: 1;
+    }
+}
+
+.sleepy-vip-hint {
+    font-size: 0.72rem;
+    color: rgba(232, 224, 236, 0.35);
+    margin-top: 0.35rem;
+    text-align: center;
+}
+
+.sleepy-vip-hint a {
+    color: rgba(227, 0, 255, 0.75);
+    text-decoration: none;
+}
+
+.sleepy-vip-hint a:hover {
+    color: #f0abfc;
+}
+
+@media (max-width: 768px) {
+    .minko-ai-wrap {
+        height: calc(100vh - 100px);
+        min-height: 400px;
+        border-radius: 12px;
+    }
+
+    .minko-ai-head-title {
+        font-size: 1.15rem;
+    }
+
+    .minko-ai-chat {
+        padding: 10px 8px;
+        gap: 8px;
+    }
+
+    .message,
+    .minko-msg {
+        padding: 4px 4px;
+        gap: 8px;
+    }
+
+    .message-avatar,
+    .minko-msg-avatar {
+        width: 34px;
+        height: 34px;
+    }
+
+    .message-content,
+    .minko-msg-body {
+        max-width: min(94%, 16.5rem);
+    }
+
+    .message-user .message-content {
+        max-width: min(92%, 14rem);
+    }
+
+    .message-bubble,
+    .minko-msg-bubble {
+        max-width: min(100%, 15.5rem);
+        padding: 7px 10px;
+        border-radius: 10px;
+    }
+
+    .minko-send-label {
+        display: none;
+    }
+
+    .minko-ai-send.minko-ai-send--labeled {
+        padding: 10px 12px;
+        min-width: 44px;
+    }
+}

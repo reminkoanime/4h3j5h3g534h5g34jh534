@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <script src="scripts/desktop-only-guard.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель Создателя | Re-Minko</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="apple-touch-icon" sizes="180x180" href="Fons/vavo/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="Fons/vavo/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="Fons/vavo/favicon-16x16.png">
+    <link rel="manifest" href="Fons/vavo/site.webmanifest">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/sidebar-layout.css">
+    <link rel="stylesheet" href="styles/loading.css">
+    <link rel="stylesheet" href="styles/notifications.css">
+    <link rel="stylesheet" href="styles/register-flow.css">
+    <link rel="stylesheet" href="styles/admin-panel.css">
+</head>
+<body>
+    <!-- Экран загрузки -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Загрузка<span class="loading-dots"></span></div>
+    </div>
+
+    <!-- Верхняя панель будет добавлена через navigation.js -->
+    
+    <!-- Основной контейнер с боковой панелью -->
+    <div class="main-layout">
+        <!-- Левая боковая панель навигации будет добавлена через navigation.js -->
+        
+        <!-- Главный контент -->
+        <main class="main-content-wrapper">
+            <div class="admin-container">
+                <div class="admin-header">
+                    <h1>🛡️ Панель Создателя</h1>
+                    <p class="admin-subtitle">Полное управление сайтом Re-Minko</p>
+                </div>
+
+                <!-- Табы -->
+                <div class="admin-tabs" id="adminTabs">
+                    <button class="admin-tab active" data-tab="dashboard">📊 Дашборд</button>
+                    <button class="admin-tab" data-tab="users">👥 Пользователи</button>
+                    <button class="admin-tab" data-tab="content">📚 Контент</button>
+                    <button class="admin-tab" data-tab="moderation">🛡️ Модерация</button>
+                    <button class="admin-tab" data-tab="notifications">🔔 Уведомления</button>
+                    <button class="admin-tab" data-tab="settings">⚙️ Настройки</button>
+                </div>
+
+                <!-- Дашборд -->
+                <div class="admin-tab-content active" id="tabDashboard">
+                    <div class="admin-stats" id="adminStats">
+                        <!-- Статистика загрузится динамически -->
+                    </div>
+                    
+                    <div class="admin-section">
+                        <h2>📈 Быстрая статистика</h2>
+                        <div id="quickStats" class="quick-stats-grid">
+                            <!-- Быстрая статистика -->
+                        </div>
+                    </div>
+
+                    <div class="admin-section visitor-analytics-section" id="visitorAnalyticsSection">
+                        <h2>🌐 Посетители и страницы</h2>
+                        <p class="admin-inline-hint" style="margin: 0 0 1rem;">
+                            Собираются просмотры с обычных страниц сайта (панель создателя не учитывается). Гость получает стабильный анонимный id в браузере;
+                            у авторизованных фиксируется учётная запись.
+                        </p>
+                        <div class="filters-row visitor-analytics-toolbar">
+                            <label class="visitor-analytics-period-label">
+                                Период
+                                <select id="visitorAnalyticsPeriod" class="filter-select" title="За сколько дней с полуночи (UTC) показывать данные">
+                                    <option value="1">1 день</option>
+                                    <option value="7" selected>7 дней</option>
+                                    <option value="30">30 дней</option>
+                                    <option value="90">90 дней</option>
+                                </select>
+                            </label>
+                            <button type="button" class="admin-btn" id="visitorAnalyticsRefresh">Обновить</button>
+                        </div>
+                        <div id="visitorAnalyticsContent" class="visitor-analytics-content">
+                            <p class="admin-inline-hint">Загрузка…</p>
+                        </div>
+                    </div>
+
+                    <div class="admin-section">
+                        <h2>🔔 Последние события</h2>
+                        <div id="recentActivity" class="activity-list">
+                            <!-- Последняя активность -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Пользователи -->
+                <div class="admin-tab-content" id="tabUsers">
+                    <div class="admin-section">
+                        <h2>👥 Управление пользователями</h2>
+                        
+                        <div class="filters-row">
+                            <input type="text" class="filter-input" id="usersSearchInput" placeholder="Поиск по имени или email...">
+                            <select class="filter-select" id="usersBanFilter" title="Фильтр по статусу бана">
+                                <option value="">Все</option>
+                                <option value="false">Не забанены</option>
+                                <option value="true">Забанены</option>
+                            </select>
+                            <button class="admin-btn" onclick="loadUsersAdvanced()">🔍 Применить фильтры</button>
+                        </div>
+
+                        <div style="overflow-x: auto;">
+                            <table class="users-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Email</th>
+                                        <th>Имя</th>
+                                        <th>VIP «Вместе»</th>
+                                        <th>VIP Minko AI</th>
+                                        <th>Статус</th>
+                                        <th>Активность</th>
+                                        <th>Действия</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usersTableBody">
+                                    <tr><td colspan="8" style="text-align: center; padding: 2rem;">Загрузка...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="pagination" id="usersPagination"></div>
+
+                        <p class="admin-hint" style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-secondary, #aaa); line-height: 1.45;">
+                            Услуги <strong>VIP «Смотреть вместе»</strong> и <strong>VIP Minko AI</strong> — отдельно, кнопкой у пользователя (⚙️ → услуги).
+                            Ваша учётка создателя в этом списке <strong>не показывается</strong>; услуги для неё <strong>навсегда</strong> без строк в таблицах подписок.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Контент -->
+                <div class="admin-tab-content" id="tabContent">
+                    <div class="admin-section">
+                        <h2>📚 Управление контентом</h2>
+                        
+                        <div class="content-tabs">
+                            <button class="content-tab-btn active" data-content="anime">Аниме</button>
+                            <button class="content-tab-btn" data-content="manga">Манга</button>
+                            <button class="content-tab-btn" data-content="music">Музыка</button>
+                        </div>
+
+                        <div id="contentAnime" class="content-section active">
+                            <p class="admin-hint" style="margin: 0 0 12px; font-size: 0.9rem; opacity: 0.85;">
+                                Добавленные тайтлы попадают в <strong>каталог аниме</strong> на сайте (как карточки MyAnimeList): постер, страница просмотра с описанием и плеер Kodik.
+                                Встроенная локальная база в <code>data.js</code> не изменяется.
+                            </p>
+                            <div class="filters-row">
+                                <input type="text" class="filter-input" id="animeSearch" placeholder="Фильтр по названию в списке...">
+                                <button type="button" class="admin-btn" onclick="loadAnimeList()">Обновить список</button>
+                                <button type="button" class="admin-btn" onclick="showAddAnimeModal()">➕ Добавить по названию (MAL)</button>
+                            </div>
+                            <div id="animeList" class="content-list"></div>
+                        </div>
+
+                        <div id="contentManga" class="content-section">
+                            <div class="filters-row">
+                                <input type="text" class="filter-input" id="mangaSearch" placeholder="Поиск манги...">
+                                <button class="admin-btn" onclick="loadMangaList()">Загрузить</button>
+                                <button class="admin-btn" onclick="showAddMangaModal()">➕ Добавить мангу</button>
+                            </div>
+                            <div id="mangaList" class="content-list"></div>
+                        </div>
+
+                        <div id="contentMusic" class="content-section">
+                            <div class="filters-row">
+                                <button class="admin-btn" onclick="loadMusicTracks()">🔄 Обновить список треков</button>
+                                <button class="admin-btn" onclick="showUploadMusicModal()">🎵 Загрузить трек</button>
+                            </div>
+                            <div id="musicTracksList" class="music-tracks-list"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Модерация -->
+                <div class="admin-tab-content" id="tabModeration">
+                    <div class="moderation-tabs">
+                        <button class="mod-tab-btn active" data-mod="chat">💬 Чат</button>
+                        <button class="mod-tab-btn" data-mod="reports">⚠️ Жалобы</button>
+                    </div>
+
+                    <!-- Модерация чата -->
+                    <div id="modChat" class="mod-section active">
+                        <div class="admin-section">
+                            <h2>💬 Модерация чата</h2>
+                            <div class="filters-row">
+                                <input type="text" class="filter-input" id="chatSearchInput" placeholder="Поиск в чате...">
+                                <input type="date" class="filter-input" id="chatDateFrom" placeholder="От" title="Дата начала">
+                                <input type="date" class="filter-input" id="chatDateTo" placeholder="До" title="Дата окончания">
+                                <button class="admin-btn" onclick="loadChatMessagesMod()">Загрузить</button>
+                            </div>
+                            <div id="chatMessagesMod" class="messages-list"></div>
+                        </div>
+                    </div>
+
+                    <!-- Жалобы -->
+                    <div id="modReports" class="mod-section">
+                        <div class="admin-section">
+                            <h2>⚠️ Жалобы и нарушения</h2>
+                            <div id="reportsList" class="reports-list">
+                                <p>Система жалоб будет добавлена в будущем</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Уведомления -->
+                <div class="admin-tab-content" id="tabNotifications">
+                    <div class="admin-section">
+                        <h2>🔔 Управление уведомлениями</h2>
+                        
+                        <div class="notification-types">
+                            <button class="admin-btn" onclick="showSendNotificationModal('single')">📨 Отправить одному</button>
+                            <button class="admin-btn" onclick="showSendNotificationModal('bulk')">📢 Массовая рассылка</button>
+                            <button class="admin-btn" onclick="showSendNotificationModal('all')">🌐 Всем пользователям</button>
+                        </div>
+
+                        <div id="notificationsManagement" class="notifications-management">
+                            <!-- Управление уведомлениями -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Настройки: режим «В разработке» -->
+                <div class="admin-tab-content" id="tabSettings">
+                    <div class="admin-section">
+                        <h2>Режим «В разработке»</h2>
+                        <p class="admin-inline-hint" style="max-width: 52rem; line-height: 1.5;">
+                            При включении все посетители, кроме Создателя, видят страницу «Сайт в разработке».
+                            Без ограничений остаются: <strong>каталог аниме</strong> и <strong>страница просмотра аниме</strong>.
+                            Ниже отметьте разделы, которые нужно оставить доступными и остальным пользователям.
+                        </p>
+                        <div class="setting-card" style="margin-top: 1rem;">
+                            <label class="setting-item" style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                <input type="checkbox" id="maintEnabled" />
+                                <span>Включить режим «В разработке»</span>
+                            </label>
+                        </div>
+                        <div class="setting-card" style="margin-top: 1rem;">
+                            <h3>Дополнительно открыть для всех</h3>
+                            <div id="maintExtraRoutes" class="settings-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0.5rem 1rem; margin-top: 0.75rem;"></div>
+                        </div>
+                        <button type="button" class="admin-btn" id="maintSaveBtn" style="margin-top: 1rem;">Сохранить</button>
+                        <p id="maintSaveStatus" class="admin-inline-hint" style="margin-top: 0.75rem;"></p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Скрипты: config.local.js задаёт Supabase и Kodik до config.js -->
+    <script src="scripts/logger.js"></script>
+    <script src="config.local.js" onerror="window.__reminkoNoLocalConfig=true"></script>
+    <script src="scripts/config.js"></script>
+    <script src="scripts/network-utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="scripts/supabase-config.js"></script>
+    <script src="scripts/creator-privileges.js"></script>
+    <script src="scripts/direct-messages.js"></script>
+    <script src="scripts/oauth-auth.js"></script>
+    <script src="scripts/utils.js"></script>
+    <script src="scripts/utils-notifications.js"></script>
+    <script src="scripts/auth.js"></script>
+    <script src="scripts/register.js"></script>
+    <script src="scripts/notifications.js"></script>
+    <script src="scripts/navigation.js"></script>
+    <script src="scripts/main.js"></script>
+    <script src="scripts/password-reset.js"></script>
+    <script src="scripts/email-confirm.js"></script>
+    <script src="scripts/data.js"></script>
+    <script src="scripts/jikan-api.js"></script>
+    <script src="scripts/shikimori-api.js"></script>
+    <script src="scripts/manga-data.js"></script>
+    <script src="scripts/admin-panel.js"></script>
+    <script src="scripts/admin-panel-creator.js"></script>
+    <script src="scripts/ai-subscription.js"></script>
+    <script src="scripts/loading.js"></script>
+    <script src="scripts/admin-panel-creator-ui.js"></script>
+    <script src="scripts/apply-navigation.js"></script>
+</body>
+</html>

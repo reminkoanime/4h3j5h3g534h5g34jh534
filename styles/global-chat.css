@@ -1,0 +1,511 @@
+/* Общий чат — макет Nunito / #0d0d14 / акцент #e300ff */
+
+.chat-page-container {
+    --gc-bg: #0d0d14;
+    --gc-text: #e8e0ec;
+    --gc-accent: #e300ff;
+    --gc-accent-dim: rgba(227, 0, 255, 0.15);
+    --gc-card: rgba(227, 0, 255, 0.04);
+    font-family: 'Nunito', system-ui, sans-serif;
+}
+
+.gc-app {
+    min-height: calc(100vh - 120px);
+    color: var(--gc-text);
+    position: relative;
+}
+
+.gc-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: rgba(227, 0, 255, 0.08);
+    border-bottom: 1px solid rgba(227, 0, 255, 0.15);
+    padding: 16px;
+    margin: 0 -12px 0;
+}
+
+.gc-header-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.gc-title {
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--gc-accent);
+    margin: 0 0 4px;
+}
+
+.gc-subtitle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: rgba(232, 224, 236, 0.6);
+}
+
+.gc-header-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.gc-main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px 0 32px;
+}
+
+.gc-glow-card {
+    background: var(--gc-card);
+    border: 1px solid rgba(227, 0, 255, 0.15);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    min-height: calc(100vh - 220px);
+    max-height: calc(100vh - 160px);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.gc-glow-card:hover {
+    border-color: rgba(227, 0, 255, 0.35);
+    box-shadow: 0 0 20px rgba(227, 0, 255, 0.08);
+}
+
+.gc-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.gc-messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+.gc-messages::-webkit-scrollbar-track {
+    background: rgba(227, 0, 255, 0.05);
+}
+
+.gc-messages::-webkit-scrollbar-thumb {
+    background: rgba(227, 0, 255, 0.3);
+    border-radius: 3px;
+}
+
+.gc-throttle-warn {
+    margin: 8px 16px 0;
+    background: rgba(255, 59, 48, 0.15);
+    border: 1px solid rgba(255, 59, 48, 0.3);
+    color: #ff6b5b;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.gc-form {
+    padding: 16px;
+    border-top: 1px solid rgba(227, 0, 255, 0.12);
+}
+
+.gc-input-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.gc-input {
+    flex: 1;
+    background: rgba(227, 0, 255, 0.06);
+    border: 1.5px solid rgba(227, 0, 255, 0.15);
+    color: var(--gc-text);
+    font-family: 'Nunito', system-ui, sans-serif;
+    font-size: 13px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    outline: none;
+    resize: none;
+    min-height: 44px;
+    max-height: 120px;
+    line-height: 1.4;
+    box-sizing: border-box;
+}
+
+.gc-input:focus {
+    border-color: rgba(227, 0, 255, 0.45);
+}
+
+.gc-input::placeholder {
+    color: rgba(232, 224, 236, 0.35);
+}
+
+.gc-char-counter {
+    font-size: 11px;
+    color: rgba(232, 224, 236, 0.4);
+    text-align: right;
+    margin-top: 4px;
+}
+
+.gc-char-counter.warning {
+    color: #ff9500;
+}
+
+.gc-char-counter.max {
+    color: #ff6b5b;
+    font-weight: 700;
+}
+
+.gc-btn-primary {
+    background: var(--gc-accent);
+    color: #fff;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Nunito', system-ui, sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.gc-btn-primary svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
+.gc-btn-primary:hover {
+    background: #c800e0;
+    box-shadow: 0 0 12px rgba(227, 0, 255, 0.4);
+}
+
+.gc-btn-primary:disabled {
+    background: #555;
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.gc-btn-outline {
+    background: transparent;
+    color: var(--gc-accent);
+    border: 1.5px solid rgba(227, 0, 255, 0.3);
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Nunito', system-ui, sans-serif;
+}
+
+.gc-btn-outline:hover {
+    border-color: var(--gc-accent);
+    background: rgba(227, 0, 255, 0.08);
+}
+
+.gc-btn-icon {
+    background: rgba(227, 0, 255, 0.08);
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--gc-accent);
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.gc-btn-icon:hover {
+    background: rgba(227, 0, 255, 0.18);
+}
+
+.gc-btn-icon--warn {
+    background: rgba(255, 59, 48, 0.15);
+    color: #ff6b5b;
+}
+
+.gc-btn-icon--warn:hover {
+    background: rgba(255, 59, 48, 0.28);
+}
+
+.gc-btn-icon svg {
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.gc-msg {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 4px;
+    padding: 8px;
+    border-radius: 8px;
+    transition: background 0.2s;
+}
+
+.gc-msg:hover {
+    background: rgba(227, 0, 255, 0.06);
+}
+
+.gc-msg--pending {
+    opacity: 0.72;
+}
+
+.gc-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 15px;
+    flex-shrink: 0;
+    background: rgba(227, 0, 255, 0.15);
+    color: var(--gc-accent);
+    overflow: hidden;
+}
+
+.gc-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.gc-msg-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.gc-msg-head {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+}
+
+.gc-msg-user {
+    font-weight: 700;
+    font-size: 12px;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    color: var(--gc-text);
+}
+
+.gc-msg-time {
+    font-size: 10px;
+    color: rgba(232, 224, 236, 0.4);
+}
+
+.gc-bubble {
+    background: rgba(227, 0, 255, 0.1);
+    padding: 10px 12px;
+    border-radius: 12px;
+    font-size: 13px;
+    line-height: 1.5;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+.gc-msg-actions {
+    display: flex;
+    gap: 4px;
+    margin-top: 6px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.gc-msg:hover .gc-msg-actions {
+    opacity: 1;
+}
+
+.gc-msg-actions .gc-btn-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+}
+
+.gc-msg-actions .gc-btn-icon svg {
+    width: 14px;
+    height: 14px;
+}
+
+.gc-like {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 6px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    background: rgba(227, 0, 255, 0.12);
+    border: none;
+    color: var(--gc-text);
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.gc-like:hover {
+    background: rgba(227, 0, 255, 0.22);
+}
+
+.gc-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    backdrop-filter: blur(4px);
+    padding: 16px;
+}
+
+.gc-modal.show {
+    display: flex;
+}
+
+.gc-modal-box {
+    background: #13121d;
+    border: 1px solid rgba(227, 0, 255, 0.2);
+    border-radius: 16px;
+    padding: 24px;
+    width: 100%;
+    max-width: 500px;
+    max-height: 80vh;
+    overflow-y: auto;
+    animation: gcModalIn 0.3s ease;
+}
+
+.gc-modal-box--narrow {
+    max-width: 320px;
+}
+
+@keyframes gcModalIn {
+    from {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.gc-modal-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.gc-modal-title {
+    font-size: 16px;
+    font-weight: 900;
+    margin: 0;
+}
+
+.gc-field,
+.gc-modal-box select,
+.gc-modal-box textarea {
+    width: 100%;
+    background: rgba(227, 0, 255, 0.06);
+    border: 1.5px solid rgba(227, 0, 255, 0.15);
+    color: var(--gc-text);
+    font-family: 'Nunito', system-ui, sans-serif;
+    font-size: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    outline: none;
+    margin-bottom: 12px;
+    box-sizing: border-box;
+}
+
+.gc-modal-box textarea {
+    min-height: 80px;
+    resize: none;
+}
+
+.gc-reaction-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+
+.gc-reaction-grid button {
+    padding: 12px;
+    font-size: 22px;
+    background: rgba(227, 0, 255, 0.08);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.gc-reaction-grid button:hover {
+    background: rgba(227, 0, 255, 0.2);
+}
+
+.gc-blocked-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    background: rgba(227, 0, 255, 0.04);
+    border: 1px solid rgba(227, 0, 255, 0.1);
+    border-radius: 8px;
+    margin-bottom: 8px;
+}
+
+.gc-toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--gc-accent);
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 700;
+    z-index: 200;
+    transition: transform 0.3s ease;
+    pointer-events: none;
+    max-width: 90vw;
+    text-align: center;
+}
+
+.gc-toast.gc-toast--show {
+    transform: translateX(-50%) translateY(0);
+}
+
+/* Совместимость со старыми классами, если где-то остались ссылки */
+.global-chat-wrapper {
+    display: contents;
+}
+
+.reply-indicator {
+    display: none !important;
+}
